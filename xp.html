@@ -4,44 +4,87 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>r00tp4rv — CTF Participation</title>
+
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+
 <style>
-:root{--bg:#020305;--panel:#071015;--neon:#7CFF4C;--muted:#7ca39a}
+:root{
+  --bg:#020305;
+  --panel:#071015;
+  --neon:#7CFF4C;
+  --muted:#7ca39a;
+}
 *{box-sizing:border-box}
-html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#000);font-family:Inter,system-ui,Arial;color:#e6f7df;overflow:auto}
+html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#000);font-family:Inter,system-ui,Arial;color:#e6f7df;overflow:auto;-webkit-font-smoothing:antialiased}
 #matrix{position:fixed;inset:0;z-index:0;opacity:0.12;pointer-events:none}
 .overlay{position:fixed;inset:0;pointer-events:none;z-index:0}
+
+/* page container */
 .wrap{position:relative;z-index:1;max-width:1100px;margin:28px auto;padding:16px}
-.header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px}
-.brand{font-family:'Share Tech Mono';color:var(--neon);font-size:18px}
-.btn-back{color:var(--neon);text-decoration:none;border:1px solid rgba(124,255,76,0.04);padding:6px 10px;border-radius:8px;background:rgba(0,0,0,0.2)}
-.shell{background:linear-gradient(180deg, rgba(124,255,76,0.02), rgba(0,0,0,0.04));border:1px solid rgba(124,255,76,0.03);padding:12px;border-radius:10px}
-.prompt{font-family:'Share Tech Mono';color:var(--neon);display:inline-block;padding:6px 10px;border-radius:8px;background:rgba(0,0,0,0.18);margin-right:12px}
-.title{display:inline-block;font-family:'Share Tech Mono';color:var(--neon);font-size:16px;vertical-align:middle}
 
-.card{margin-top:12px;background:linear-gradient(180deg,rgba(0,0,0,0.12),rgba(0,0,0,0.05));padding:12px;border-radius:10px;border:1px solid rgba(124,255,76,0.03)}
-.small-note{color:var(--muted);font-size:13px;margin-top:8px}
+/* shell heading row */
+.shell{
+  background:linear-gradient(180deg, rgba(124,255,76,0.02), rgba(0,0,0,0.04));
+  border:1px solid rgba(124,255,76,0.03);
+  padding:14px;
+  border-radius:12px;
+  box-shadow:0 20px 60px rgba(0,0,0,0.6);
+  display:block;
+}
+.top-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:8px;
+}
+.left-group{display:flex;align-items:center;gap:12px}
+.back-btn{
+  display:inline-flex;align-items:center;gap:8px;
+  font-family:'Share Tech Mono',monospace;color:var(--neon);background:rgba(0,0,0,0.14);
+  padding:8px 10px;border-radius:8px;border:1px solid rgba(124,255,76,0.03);text-decoration:none;
+}
+.title{
+  font-family:'Share Tech Mono',monospace;color:var(--neon);font-size:18px;
+  white-space:nowrap;
+}
+.right-link{
+  font-family:'Share Tech Mono',monospace;color:var(--neon);
+  background:rgba(0,0,0,0.12);padding:8px 10px;border-radius:8px;border:1px solid rgba(124,255,76,0.03);
+  text-decoration:none;
+}
 
-.table-wrap{overflow:auto;margin-top:12px}
+/* small prompt line for ls -la */
+.prompt-line{display:flex;align-items:center;gap:10px;margin:10px 0 4px}
+.prompt{font-family:'Share Tech Mono',monospace;color:var(--neon);background:rgba(0,0,0,0.12);padding:6px 10px;border-radius:8px}
+.subtle{color:var(--muted);font-size:13px}
+
+/* card for table */
+.card{margin-top:12px;background:linear-gradient(180deg,rgba(0,0,0,0.12),rgba(0,0,0,0.05));padding:10px;border-radius:10px;border:1px solid rgba(124,255,76,0.03)}
+
+/* table */
+.table-wrap{overflow:auto;margin-top:8px;border-radius:8px}
 table{width:100%;border-collapse:collapse;font-size:14px}
-thead th{font-family:'Share Tech Mono';text-align:left;padding:10px 12px;color:#bfeeb0;font-size:13px;white-space:nowrap}
-tbody tr{transition:all 180ms ease}
+thead th{font-family:'Share Tech Mono',monospace;text-align:left;padding:10px 12px;color:#bfeeb0;font-size:13px;white-space:nowrap}
+tbody tr{transition:all 160ms ease}
 tbody tr:hover{transform:translateY(-3px);background:linear-gradient(90deg, rgba(124,255,76,0.02), transparent)}
-tbody td{padding:10px 12px;border-top:1px solid rgba(255,255,255,0.02)}
-.num{font-family:'Share Tech Mono',monospace}
-.top20{background:linear-gradient(90deg, rgba(124,255,76,0.06), rgba(0,0,0,0.03));border-left:3px solid rgba(124,255,76,0.28)}
+tbody td{padding:10px 12px;border-top:1px solid rgba(255,255,255,0.02);font-family:'Share Tech Mono',monospace}
+.num{font-variant-numeric:tabular-nums}
+.top20{background:linear-gradient(90deg, rgba(124,255,76,0.06), rgba(0,0,0,0.03));border-left:3px solid rgba(124,255,76,0.22)}
 
+/* stats row */
 .stats-row{display:flex;gap:12px;margin-top:14px;flex-wrap:wrap}
 .stat{flex:1;min-width:130px;background:rgba(0,0,0,0.14);padding:12px;border-radius:8px;border:1px solid rgba(124,255,76,0.03);text-align:center}
 .stat .n{font-family:'Share Tech Mono';font-size:28px;color:var(--neon)}
 .stat .l{color:var(--muted);font-size:12px;margin-top:6px}
 
+/* responsive: convert table to stacked cards */
 @media (max-width:860px){
-  .title{font-size:15px}
   thead{display:none}
   tbody tr{display:block;margin-bottom:12px;padding:10px;border-radius:8px;background:linear-gradient(180deg,rgba(0,0,0,0.06),rgba(0,0,0,0.03))}
   tbody td{display:flex;justify-content:space-between;padding:8px;border-top:0}
-  .stat{min-width:45%}
+  .stats-row{gap:10px}
+  .title{font-size:16px}
 }
 </style>
 </head>
@@ -49,15 +92,22 @@ tbody td{padding:10px 12px;border-top:1px solid rgba(255,255,255,0.02)}
 <canvas id="matrix" aria-hidden="true"></canvas>
 <div class="overlay noise" aria-hidden="true"></div>
 
-<div class="wrap">
-  <div class="header">
-    <div class="brand">$ ls</div>
-    <a class="btn-back" href="index.html">open terminal</a>
-  </div>
+<div class="wrap" role="main">
+  <div class="shell" role="region" aria-label="ctf participation shell">
+    <div class="top-row">
+      <div class="left-group">
+        <!-- back arrow inside shell -->
+        <a href="index.html" class="back-btn" aria-label="back to terminal">← <span style="font-family:'Share Tech Mono',monospace">terminal</span></a>
+        <!-- title -->
+        <div class="title">$ r00tp4rv's CTF participation</div>
+      </div>
 
-  <div class="shell" aria-labelledby="title">
-    <span class="prompt">$</span><span id="title" class="title">r00tp4rv's CTF participation</span>
-    <div class="small-note" style="margin-top:8px">$ ls -la</div>
+      <!-- ctftime link on right, same font & theme -->
+      <a class="right-link" href="https://ctftime.org/user/91766" target="_blank" rel="noopener">ctftime / user 91766</a>
+    </div>
+
+    <!-- prompt line -->
+    <div class="prompt-line"><div class="prompt">$</div><div class="subtle">$ ls -la</div></div>
 
     <div class="card">
       <div class="table-wrap" aria-live="polite">
@@ -80,17 +130,17 @@ tbody td{padding:10px 12px;border-top:1px solid rgba(255,255,255,0.02)}
 </div>
 
 <script>
-/* Matrix BG (subtle) */
+/* subtle matrix background */
 (function(){
-  const c=document.getElementById('matrix'); const ctx=c.getContext('2d');
-  let W,H,cols,ypos; function fit(){ W=c.width=innerWidth; H=c.height=innerHeight; cols=Math.max(8,Math.floor(W/20)); ypos=Array(cols).fill(0);} addEventListener('resize', fit); fit();
-  const chars='abcdefghijklmnopqrstuvwxyz0123456789@#$%&*()<>/\\\\|';
-  function frame(){ ctx.fillStyle='rgba(0,0,0,0.06)'; ctx.fillRect(0,0,W,H); ctx.fillStyle='rgba(124,255,76,0.85)'; ctx.font='14px \"Share Tech Mono\"';
-    for(let i=0;i<cols;i++){ const ch=chars.charAt(Math.floor(Math.random()*chars.length)); ctx.fillText(ch, i*20, ypos[i]*16); if(ypos[i]*16>H && Math.random()>0.98) ypos[i]=0; ypos[i]++; } requestAnimationFrame(frame);
-  } requestAnimationFrame(frame);
+  const c = document.getElementById('matrix'), ctx = c.getContext('2d');
+  let W,H,cols,y; function fit(){ W=c.width=innerWidth; H=c.height=innerHeight; cols=Math.max(8,Math.floor(W/20)); y=Array(cols).fill(0);} addEventListener('resize', fit); fit();
+  const chars = 'abcdefghijklmnopqrstuvwxyz0123456789@#$%&*()<>/\\\\|';
+  function frame(){ ctx.fillStyle='rgba(0,0,0,0.06)'; ctx.fillRect(0,0,W,H); ctx.fillStyle='rgba(124,255,76,0.85)'; ctx.font='14px "Share Tech Mono"';
+    for(let i=0;i<cols;i++){ const ch = chars.charAt(Math.floor(Math.random()*chars.length)); ctx.fillText(ch, i*20, y[i]*16); if(y[i]*16>H && Math.random()>0.98) y[i]=0; y[i]++; } requestAnimationFrame(frame); }
+  requestAnimationFrame(frame);
 })();
 
-/* Sample data — replace with your real rows or let me auto-fill from CTFTime */
+/* your CTF rows — replace with real data */
 const ctfRows = [
   {place:457,event:'CrewCTF 2025',points:50,rating:0.334,notes:''},
   {place:70,event:'K17 CTF',points:2544,rating:9.095,notes:'web'},
@@ -105,53 +155,34 @@ const ctfRows = [
   {place:204,event:'Google CTF 2025',points:50,rating:1.111,notes:''}
 ];
 
-/* render table and stats */
+/* render rows; highlight top20 and count top10/events */
 (function(){
   const tbody = document.getElementById('ctf-body');
   let events = 0, top10 = 0;
   ctfRows.forEach(r=>{
     events++;
     const tr = document.createElement('tr');
-    if(Number(r.place)<=20) { tr.classList.add('top20'); if(Number(r.place)<=10) top10++; else top10++; } // mark top20 and count top10 later
-    tr.innerHTML = `<td class="num">${r.place}</td>
-                    <td style="font-family:'Share Tech Mono',monospace">${r.event}</td>
-                    <td class="num">${r.points}</td>
-                    <td class="num">${r.rating}</td>
-                    <td>${r.notes||'—'}</td>`;
+    if(Number(r.place) <= 20) tr.classList.add('top20');
+    if(Number(r.place) <= 10) top10++;
+    tr.innerHTML = `
+      <td class="num">${r.place}</td>
+      <td style="font-family:'Share Tech Mono',monospace">${r.event}</td>
+      <td class="num">${r.points}</td>
+      <td class="num">${r.rating}</td>
+      <td>${r.notes || '—'}</td>
+    `;
     tbody.appendChild(tr);
   });
-
-  // calculate top10 precisely
-  top10 = ctfRows.filter(x=>Number(x.place)<=10).length;
   document.getElementById('events-played').dataset.target = events;
   document.getElementById('top10').dataset.target = top10;
 
-  // count-up animation
-  function animate(el, target, dur=1000){
-    let start=null;
-    function step(ts){
-      if(!start) start=ts;
-      const progress = Math.min((ts-start)/dur,1);
-      el.textContent = Math.floor(progress*target);
-      if(progress<1) requestAnimationFrame(step);
-      else el.textContent = target;
-    }
-    requestAnimationFrame(step);
-  }
+  /* count-up */
+  function animate(el, target, dur=900){ let s=null; function step(ts){ if(!s) s=ts; const p=Math.min((ts-s)/dur,1); el.textContent = Math.floor(p*target); if(p<1) requestAnimationFrame(step); else el.textContent = target; } requestAnimationFrame(step); }
   const els = [document.getElementById('events-played'), document.getElementById('top10')];
   if('IntersectionObserver' in window){
-    const obs = new IntersectionObserver((entries, ob)=>{
-      entries.forEach(en=>{
-        if(en.isIntersecting){
-          animate(en.target, Number(en.target.dataset.target||0));
-          ob.unobserve(en.target);
-        }
-      });
-    }, {threshold:0.3});
+    const obs = new IntersectionObserver((entries, o) => { entries.forEach(en=>{ if(en.isIntersecting){ animate(en.target, Number(en.target.dataset.target||0)); o.unobserve(en.target); } }); }, {threshold:0.35});
     els.forEach(e=>obs.observe(e));
-  } else {
-    els.forEach(e=>animate(e, Number(e.dataset.target||0)));
-  }
+  } else els.forEach(e=>animate(e, Number(e.dataset.target||0)));
 })();
 </script>
 </body>
