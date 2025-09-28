@@ -2,236 +2,97 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>r00tp4rv — Interactive Terminal</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1" />
+  <title>r00tp4rv — Interactive Terminal (Responsive)</title>
 
-  <!-- Bootstrap (for layout only) -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
 
   <style>
-    :root{--bg:#040606;--neon:#b6ff67;--muted:#7ca39a}
-    html,body{height:100%;}
-    body{margin:0;background:linear-gradient(180deg,#000005,#020409);color:#e6f7df;font-family:Inter,system-ui, 'Share Tech Mono', monospace}
-
-    /* Topbar */
-    .topbar{display:flex;align-items:center;justify-content:space-between;padding:22px 40px;border-bottom:2px solid rgba(182,255,103,0.06)}
-    .brand{font-family:'Share Tech Mono';font-size:48px;color:var(--neon);letter-spacing:2px}
-    .navlinks{display:flex;gap:32px;font-family:'Share Tech Mono';color:var(--neon);font-size:18px}
+    :root{--neon:#7CFF4C;--muted:#7ca39a;--bg1:#000004;}
+    html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg1),#02060a);
+      font-family:Inter,'Share Tech Mono',monospace;color:#e6f7df;overflow:auto;}
+    a{color:var(--neon)}
+    #matrix{position:fixed;inset:0;z-index:0;opacity:0.16;pointer-events:none}
+    .overlay{position:fixed;inset:0;pointer-events:none;z-index:1}
+    .noise{mix-blend-mode:overlay;opacity:0.06;background-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="160" height="160"><rect width="100%" height="100%" fill="black"/><g fill="white" opacity="0.02"><circle cx="20" cy="30" r="1"/></g></svg>')}
+    .scanlines{background:repeating-linear-gradient(0deg,rgba(255,255,255,0.008),rgba(255,255,255,0.008) 1px,transparent 1px,transparent 4px);opacity:0.04}
+    .page{position:relative;z-index:2;min-height:100vh;display:flex;flex-direction:column}
+    .topbar{display:flex;align-items:center;justify-content:space-between;padding:20px 28px;border-bottom:1px solid rgba(124,255,76,0.04)}
+    .brand{font-family:'Share Tech Mono';font-size:52px;color:var(--neon);}
+    .navlinks{display:flex;gap:20px;font-family:'Share Tech Mono';font-size:16px}
     .navlinks a{color:var(--neon);text-decoration:none}
-
-    .hero-divider{height:2px;background:linear-gradient(90deg, rgba(182,255,103,0.12), transparent)}
-    .container-main{max-width:1100px;margin:36px auto;padding:0 20px 80px}
-
-    /* Mac terminal */
-    .mac-term{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.03));border-radius:12px;box-shadow:0 30px 60px rgba(0,0,0,0.6);overflow:hidden;border:1px solid rgba(182,255,103,0.03)}
-    .mac-bar{display:flex;align-items:center;gap:12px;padding:12px 16px;background:linear-gradient(180deg,#0b0f12,#061013);border-bottom:1px solid rgba(182,255,103,0.02)}
-    .traffic{display:flex;gap:8px}
-    .dot{width:12px;height:12px;border-radius:50%;box-shadow:inset 0 1px 0 rgba(0,0,0,0.5)}
+    .container-main{max-width:1200px;margin:28px auto;padding:0 20px 64px;width:100%}
+    .mac-term{background:#0b0c0d;border-radius:14px;box-shadow:0 40px 90px rgba(0,0,0,0.7);overflow:hidden;border:1px solid rgba(124,255,76,0.03)}
+    .mac-bar{display:flex;align-items:center;gap:12px;padding:12px 16px;background:#071017}
+    .traffic{display:flex;gap:10px}
+    .dot{width:14px;height:14px;border-radius:50%}
     .dot.red{background:#ff5f57}.dot.yellow{background:#ffbd2e}.dot.green{background:#28c840}
-    .mac-title{flex:1;text-align:center;color:rgba(182,255,103,0.7);font-family:'Share Tech Mono';font-size:13px}
-
-    .term-wrap{padding:18px;background:linear-gradient(180deg, rgba(0,0,0,0.05), rgba(255,255,255,0.01));min-height:320px;position:relative}
-
-    /* Terminal content */
-    .terminal{background:transparent;color:var(--neon);font-family:'Share Tech Mono', monospace;font-size:15px;line-height:1.5;min-height:260px}
-    .line{white-space:pre-wrap}
-    .prompt{color:var(--neon)}
-    .output{color:#cbeeb0;margin-bottom:6px}
-
-    /* Input area */
-    .cmdline{display:flex;gap:8px;align-items:center;margin-top:8px}
-    .prompt-label{min-width:120px;color:var(--neon);opacity:0.95}
-    .input-wrap{flex:1;background:rgba(255,255,255,0.01);padding:10px;border-radius:6px;border:1px solid rgba(182,255,103,0.02)}
-    .input{background:transparent;border:0;outline:none;color:var(--neon);font-family:'Share Tech Mono';font-size:15px;width:100%}
-
-    /* fake blinking cursor when we show static only */
-    .cursor{display:inline-block;width:9px;height:18px;background:var(--neon);vertical-align:middle;margin-left:6px;animation:pulse 1s linear infinite}
-    @keyframes pulse{0%{opacity:1}50%{opacity:0.12}100%{opacity:1}}
-
-    .muted{color:var(--muted)}
-    footer{margin-top:28px;text-align:center;color:var(--muted);font-size:13px}
-
-    /* responsive tweaks */
-    @media (max-width:720px){.brand{font-size:36px}.navlinks{font-size:14px;gap:14px}}
+    .mac-title{flex:1;text-align:center;color:rgba(124,255,76,0.75);font-size:13px}
+    .term-wrap{padding:20px;min-height:360px;display:flex;flex-direction:column;gap:12px}
+    .terminal{color:var(--neon);font-family:'Share Tech Mono',monospace;font-size:16px;line-height:1.6;
+      max-height:440px;overflow:auto;border-radius:6px;}
+    .line{white-space:pre-wrap;margin-bottom:8px}
+    .cmdline{display:flex;gap:10px;align-items:center;margin-top:auto}
+    .prompt-label{min-width:90px;color:var(--neon);}
+    .input-wrap{flex:1;background:rgba(255,255,255,0.01);padding:12px;border-radius:10px}
+    .input{background:transparent;border:0;outline:none;color:var(--neon);font-size:16px;width:100%}
+    .stat-grid{display:flex;gap:18px;margin-top:18px}
+    .stat-card{flex:1;text-align:center;padding:18px;border-radius:12px;background:#0e1315}
+    .stat-num{font-family:'Share Tech Mono';font-size:44px;color:var(--neon)}
+    .stat-label{color:var(--muted);letter-spacing:2px;margin-top:8px}
+    footer{text-align:center;color:var(--muted);font-size:13px;margin-top:20px}
   </style>
 </head>
 <body>
-  <header class="topbar">
-    <div class="brand">r00tp4rv</div>
-    <nav class="navlinks" aria-label="primary">
-      <a href="#whoami">whoami/</a>
-      <a href="#xp">xp/</a>
-      <a href="#writeups">writeups/</a>
-      <a href="#contact">contact/</a>
+<canvas id="matrix"></canvas>
+<div class="overlay noise"></div><div class="overlay scanlines"></div>
+<div class="page">
+  <header class="topbar"><div class="brand">r00tp4rv</div>
+    <nav class="navlinks">
+      <a href="https://www.linkedin.com/in/parvbajaj" target="_blank">whoami/</a>
+      <a href="xp.html">xp/</a>
+      <a href="https://medium.com/@parvbajaj2000" target="_blank">writeups/</a>
+      <a href="mailto:r00tp4rv@gmail.com">contact/</a>
     </nav>
   </header>
-  <div class="hero-divider"></div>
 
   <main class="container-main">
     <section class="mac-term">
-      <div class="mac-bar">
-        <div class="traffic"><div class="dot red"></div><div class="dot yellow"></div><div class="dot green"></div></div>
-        <div class="mac-title">r00tp4rv — interactive demo terminal</div>
-      </div>
-
+      <div class="mac-bar"><div class="traffic"><div class="dot red"></div><div class="dot yellow"></div><div class="dot green"></div></div>
+        <div class="mac-title">r00tp4rv — interactive demo terminal</div></div>
       <div class="term-wrap">
-        <div id="terminal" class="terminal" aria-live="polite">
-          <!-- Initial welcome lines -->
-          <div class="line output">Welcome — this is a static demo terminal for <strong>r00tp4rv</strong>. Type <span class="muted">whoami</span> to get started.</div>
-        </div>
-
-        <!-- Input area where user types commands -->
-        <div class="cmdline" role="region" aria-label="terminal input">
-          <div class="prompt-label">$</div>
-          <div class="input-wrap">
-            <input id="cmd-input" class="input" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="type a command (try: whoami, xp, writeups, contact)" />
-          </div>
-        </div>
+        <div id="terminal" class="terminal"><div class="line">Boot complete. Type <b>whoami</b> or <b>help</b>.</div></div>
+        <div class="cmdline"><div class="prompt-label">$</div><div class="input-wrap">
+          <input id="cmd-input" class="input" placeholder="try: whoami, xp, writeups, contact, nmap, sudo" /></div></div>
       </div>
+      <div style="padding:16px"><div class="stat-grid">
+        <div class="stat-card"><div class="stat-num" data-target="25">0</div><div class="stat-label">CTFS PARTICIPATED</div></div>
+        <div class="stat-card"><div class="stat-num" data-target="3">0</div><div class="stat-label">AWARDS WON</div></div>
+        <div class="stat-card"><div class="stat-num" data-target="1">0</div><div class="stat-label">TEAM MEMBERS</div></div>
+      </div></div>
     </section>
-
-    <footer>Built by Parv "r00tp4rv" Bajaj • keyboard: Enter to run, Up/Down to browse history, type <code>help</code> for commands.</footer>
+    <footer>Built by Parv "r00tp4rv" Bajaj • Enter to run • Up/Down for history • type help</footer>
   </main>
+</div>
 
-  <script>
-    // Data: commands and their outputs. Update these to reflect your real links/info.
-    const COMMANDS = {
-      'whoami': [
-        'parv (aka r00tp4rv) — Product Security Engineer @ FinThrive',
-        'CTF player & pentester based in India. Long-term goal: Switzerland.'
-      ],
-      'xp': [
-        'skills: web-pentest, appsec, cloud security (AWS), exploit dev, reverse engineering, threat modeling',
-        'certs: OSCP, CEH, eJPT, eWPTX',
-        'experience: 3.5 years pentesting, Product Security lead duties (SCA, threat modeling, remediation)'
-      ],
-      'writeups': [
-        'Recent writeups: 2025-htb-business-web-200.md, 2025-crypto-decode-100.md',
-        'GitHub repo: https://github.com/r00tp4rv/ctf-writeups'
-      ],
-      'contact': [
-        'email: r00tp4rv@gmail.com',
-        'github: https://github.com/r00tp4rv',
-        'ctftime: https://ctftime.org/profile/ (please edit with your profile link)'
-      ],
-      'social': [
-        'Twitter/X: https://twitter.com/<your-handle>',
-        'LinkedIn: https://linkedin.com/in/parvbajaj'
-      ],
-      'resume': [
-        'Resume: (add link here)'
-      ],
-      'help': [
-        'available commands: whoami | xp | writeups | contact | social | resume | clear | help'
-      ]
-    };
-
-    const terminal = document.getElementById('terminal');
-    const input = document.getElementById('cmd-input');
-
-    // command history
-    let history = [];
-    let histIndex = -1;
-
-    // focus the input on load and when terminal clicked
-    window.onload = () => { input.focus(); };
-    terminal.addEventListener('click', ()=> input.focus());
-
-    // helper: append a line to terminal
-    function appendLine(text, cls='output'){
-      const el = document.createElement('div');
-      el.className = 'line ' + cls;
-      el.textContent = text;
-      terminal.appendChild(el);
-      // keep scroll at bottom
-      terminal.scrollTop = terminal.scrollHeight;
-      return el;
-    }
-
-    // helper: typewriter effect for a single line
-    function typeLine(text, cls='output', speed=18){
-      return new Promise((resolve)=>{
-        const el = document.createElement('div');
-        el.className = 'line ' + cls;
-        terminal.appendChild(el);
-        let i=0;
-        function step(){
-          if(i<=text.length){
-            el.textContent = text.slice(0,i);
-            terminal.scrollTop = terminal.scrollHeight;
-            i++;
-            setTimeout(step, speed);
-          } else resolve();
-        }
-        step();
-      });
-    }
-
-    // process a command (string) and print outputs with slight typing delay
-    async function runCommand(cmd){
-      cmd = cmd.trim();
-      if(!cmd) return;
-
-      appendLine('$ ' + cmd, 'prompt');
-
-      if(cmd === 'clear'){
-        // clear terminal (preserve initial welcome)
-        terminal.innerHTML = '';
-        appendLine('Welcome — this is a static demo terminal for r00tp4rv. Type whoami to get started.');
-        return;
-      }
-
-      const out = COMMANDS[cmd.toLowerCase()];
-      if(!out){
-        await typeLine('Command not found: ' + cmd, 'output', 18);
-        return;
-      }
-
-      // print each output line with delay
-      for(const line of out){
-        await typeLine(line, 'output', 14);
-        await new Promise(r => setTimeout(r, 120));
-      }
-    }
-
-    // handle Enter and history navigation
-    input.addEventListener('keydown', async (e)=>{
-      if(e.key === 'Enter'){
-        const val = input.value;
-        history.unshift(val);
-        histIndex = -1;
-        input.value = '';
-        await runCommand(val);
-      } else if(e.key === 'ArrowUp'){
-        // previous
-        if(history.length === 0) return;
-        histIndex = Math.min(history.length-1, histIndex+1);
-        input.value = history[histIndex] || '';
-        e.preventDefault();
-      } else if(e.key === 'ArrowDown'){
-        if(history.length === 0) return;
-        histIndex = Math.max(-1, histIndex-1);
-        input.value = histIndex === -1 ? '' : history[histIndex];
-        e.preventDefault();
-      }
-    });
-
-    // accessibility: allow 'c' to clear and 'h' to show help quickly
-    document.addEventListener('keydown',(e)=>{
-      if(e.ctrlKey || e.metaKey) return; // ignore ctrl combos
-      if(e.key === 'c'){
-        terminal.innerHTML = '';
-        appendLine('Welcome — this is a static demo terminal for r00tp4rv. Type whoami to get started.');
-      }
-      if(e.key === 'h'){
-        runCommand('help');
-      }
-    });
-  </script>
-
-  <!-- bootstrap bundle -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+(function(){
+  const terminal=document.getElementById('terminal'),input=document.getElementById('cmd-input');
+  function append(t){const d=document.createElement('div');d.className='line';d.innerHTML=t;terminal.appendChild(d);terminal.scrollTop=terminal.scrollHeight;}
+  async function run(c){c=c.trim();if(!c)return;append('$ '+c);
+    if(c==='whoami'){append('Opening LinkedIn...');window.open('https://www.linkedin.com/in/parvbajaj','_blank');}
+    else if(c==='xp'){append('Opening XP page...');location.href='xp.html';}
+    else if(c==='writeups'){append('Opening Medium...');window.open('https://medium.com/@parvbajaj2000','_blank');}
+    else if(c==='contact'){append('Opening email...');location.href='mailto:r00tp4rv@gmail.com';}
+    else if(c==='sudo'){append('sudo: authentication failed');}
+    else if(c==='help'){append('whoami | xp | writeups | contact | nmap <host> | sudo | clear');}
+    else if(c==='clear'){terminal.innerHTML='';}
+    else if(c.startsWith('nmap')){append('Scanning...');append('22/tcp open ssh');append('80/tcp open http');append('443/tcp open https');}
+    else append('Command not found: '+c);}
+  input.addEventListener('keydown',e=>{if(e.key==='Enter'){run(input.value);input.value='';}});
+})();
+</script>
 </body>
-</html>
+</html>o
 
