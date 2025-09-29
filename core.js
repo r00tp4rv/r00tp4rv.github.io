@@ -49,7 +49,7 @@
         'cat': { type: 'file', content: 'ELF placeholder' }
       }},
       'etc': { type: 'dir', children: {
-        'passwd': { type: 'file', content: 'root:x:0:0:root:/root:/bin/bash\nr00tp4rv:x:1000:1000:Parv:/home/r00tp4rv:/bin/zsh' }
+        'passwd': { type: 'file', content: 'root:x:0:0:root:/root:/bin/bash\nr00tp4rv:x:1000:1000:Parv:/home/r00tp4rv:/bin/zsh\nr00tr1t1:x:1001:1001:Riti:/home/r00tr1t1:/bin/bash #r00tp4rv{R1t1_h1d3s_1n_Sh4d0ws}' }
       }},
       'home': { type: 'dir', children: {} },
       'Users': { type: 'dir', children: {
@@ -171,9 +171,10 @@
     if(base === 'whoami'){ await typeLine(isRoot ? 'root' : 'Parv (aka r00tp4rv) — Product Security Engineer'); return; }
     if(base === 'moreinfo'){ await typeLine('well versed in Web, Mobile, OSINT, Crypto and Steganography'); return; }
 if (base === 'ctf') {
-  await typeLine(`Flags aren't flagging these days - SG93IG1hbnkgYmFzZXMgYXJlIHRoZXJlPyAKV2prR3lYWVV4WTEyY20yWmlqMXRtOGpiQVBYRkYyR0V6UWVjczRkQVNGRmFBdHQ4RVJzblhKZ0tSSHJ3bjQ2ZDRFZU1KQ3RSQ0hvSndoZzJCS3ZhaUEzR2tpOFNzMzdkTkFkNTFGVUQ0MVdid3RvOXlENERob3RpQ2hHcDYxUnREdnVWd3dlcEhCajlkcWg5Vlh6c3pr`);
+  await typeLine(`Flag_1s aren't flagging these days - SG93IG1hbnkgYmFzZXMgYXJlIHRoZXJlPyAKV2prR3lYWVV4WTEyY20yWmlqMXRtOGpiQVBYRkYyR0V6UWVjczRkQVNGRmFBdHQ4RVJzblhKZ0tSSHJ3bjQ2ZDRFZU1KQ3RSQ0hvSndoZzJCS3ZhaUEzR2tpOFNzMzdkTkFkNTFGVUQ0MVdid3RvOXlENERob3RpQ2hHcDYxUnREdnVWd3dlcEhCajlkcWg5Vlh6c3pr`);
   if (!isRoot) {
-    await typeLine('Are you root? no? then you can\'t find flag2');
+     await typeLine('I have heard that flag_2 hides in shadows')
+     await typeLine('Are you root? no? then you can\'t find flag_3');
   } else {
     await typeLine('You are root — try: cd /root && cat root.txt');
   }
@@ -445,7 +446,7 @@ if (base === 'ctf') {
       const status = document.getElementById('flag-status');
       status.innerHTML = '<span style="color:var(--muted)">checking…</span>';
       await new Promise(r=>setTimeout(r,700));
-      const ok = (val === 'r00tp4rv{g07_y0u_by_7h3_b4ll5}' || val === 'r00tp4rv{r0071n9_15_fuN}');
+      const ok = (val === 'r00tp4rv{g07_y0u_by_7h3_b4ll5}' || val === 'r00tp4rv{r0071n9_15_fuN}' || val === 'r00tp4rv{R1t1_h1d3s_1n_Sh4d0ws}');
       window.updateFlagCard(ok);
     });
     input.addEventListener('keydown', e=>{ if(e.key === 'Enter'){ e.preventDefault(); btn.click(); } });
