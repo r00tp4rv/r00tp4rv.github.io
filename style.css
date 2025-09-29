@@ -179,6 +179,14 @@ a{color:var(--neon)}
 .stats-block{display:flex;gap:14px;align-items:center;justify-content:center;margin-top:6px;flex-wrap:wrap}
 .stat{flex:1;min-width:160px;max-width:320px;background:linear-gradient(180deg,rgba(0,0,0,0.12),rgba(0,0,0,0.04));padding:14px;border-radius:10px;border:1px solid rgba(124,255,76,0.03);text-align:center;box-shadow:0 10px 30px rgba(0,0,0,0.6)}
 .stat .n{font-family:'Share Tech Mono';font-size:36px;color:var(--neon);line-height:1}
+.stat .n {
+  font-family:'Share Tech Mono';
+  font-size:36px;
+  color:var(--neon);
+  line-height:1;
+  text-shadow: 0 0 6px rgba(124,255,76,0.7),
+               0 0 14px rgba(124,255,76,0.4);
+}
 .stat .l{color:var(--muted);font-size:13px;margin-top:8px;letter-spacing:1px}
 
 /* footer */
