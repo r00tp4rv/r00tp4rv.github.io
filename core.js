@@ -484,7 +484,7 @@ if (base === 'ctf') {
   })();
 
 })();
-/* ---------- Hamburger toggle (classic bars) + sidebar integration ---------- */
+/* ---------------- Mobile hamburger & sidebar behaviour ---------------- */
 (function(){
   const hamburger = document.getElementById('hamburger');
   const sidebar = document.getElementById('mobile-sidebar');
@@ -500,10 +500,8 @@ if (base === 'ctf') {
     sidebar.setAttribute('aria-hidden','false');
     backdrop.classList.add('open');
     backdrop.setAttribute('aria-hidden','false');
-    // focus first link for accessibility
     const firstLink = sidebar.querySelector('.mobile-navlist a');
     if(firstLink) firstLink.focus();
-    // prevent body scroll on mobile
     document.documentElement.style.overflow = 'hidden';
   }
 
@@ -514,63 +512,31 @@ if (base === 'ctf') {
     sidebar.setAttribute('aria-hidden','true');
     backdrop.classList.remove('open');
     backdrop.setAttribute('aria-hidden','true');
-    // restore focus to hamburger
     hamburger.focus();
     document.documentElement.style.overflow = '';
   }
 
-  // toggle on hamburger click
   hamburger.addEventListener('click', ()=>{
-    if(hamburger.classList.contains('open')) closeSidebar();
-    else openSidebar();
+    const open = hamburger.classList.contains('open');
+    if(open) closeSidebar(); else openSidebar();
   });
 
-  // other interactions
   closeBtn && closeBtn.addEventListener('click', closeSidebar);
   backdrop.addEventListener('click', closeSidebar);
 
   document.addEventListener('keydown', (e)=>{
-    if(e.key === 'Escape' && sidebar.classList.contains('open')) closeSidebar();
+    if(e.key === 'Escape'){
+      if(sidebar.classList.contains('open')) closeSidebar();
+    }
   });
 
-  // close when viewport expands beyond mobile breakpoint
   window.addEventListener('resize', ()=>{
-    if(window.innerWidth > 720 && sidebar.classList.contains('open')) closeSidebar();
+    if(window.innerWidth > 720){
+      if(sidebar.classList.contains('open')) closeSidebar();
+    }
   });
 
-  // close sidebar if a nav link inside it is clicked
   sidebar.addEventListener('click', (e)=>{
     if(e.target.tagName.toLowerCase() === 'a') closeSidebar();
   });
-})();
-/* ---------- Safety: hide duplicate hamburger elements & sync ARIA ---------- */
-(function(){
-  // Hide all hamburger elements except the first (defensive)
-  const hamburgers = Array.from(document.querySelectorAll('.hamburger'));
-  if(hamburgers.length > 1){
-    hamburgers.slice(1).forEach(h => h.style.display = 'none');
-  }
-
-  // make sure only header's hamburger is used for aria control (defensive)
-  const headerHamb = document.querySelector('header .hamburger');
-  if(headerHamb){
-    hamburgers.forEach(h => {
-      if(h !== headerHamb){
-        h.setAttribute('aria-hidden','true');
-        h.setAttribute('tabindex','-1');
-      } else {
-        h.setAttribute('aria-hidden','false');
-      }
-    });
-  }
-
-  // If someone left a duplicate mobile-sidebar/backdrop pairs, hide duplicates too
-  const sidebars = Array.from(document.querySelectorAll('#mobile-sidebar'));
-  if(sidebars.length > 1){
-    sidebars.slice(1).forEach(s => s.style.display = 'none');
-  }
-  const backdrops = Array.from(document.querySelectorAll('#mobile-backdrop'));
-  if(backdrops.length > 1){
-    backdrops.slice(1).forEach(b => b.style.display = 'none');
-  }
 })();
