@@ -213,7 +213,15 @@ a{color:var(--neon)}
   color:var(--neon);
   transition:transform .12s ease;
 }
-.hamburger .bar{ display:block; width:22px; height:2px; border-radius:2px; background:var(--neon); margin:3px 0; transition: transform .25s ease, opacity .18s ease, background .18s; }
+.hamburger .bar {
+  display:block;
+  width:14px;          /* shorter width = like "-" instead of "—" */
+  height:3px;          /* a bit thicker */
+  border-radius:2px;
+  background:var(--neon);
+  margin:4px auto;     /* auto centers the short dash */
+  transition: transform .25s ease, opacity .18s ease, background .18s;
+}
 .hamburger.open .bar1{ transform: translateY(5px) rotate(45deg); }
 .hamburger.open .bar2{ opacity:0; transform: scaleX(.2); }
 .hamburger.open .bar3{ transform: translateY(-5px) rotate(-45deg); }
