@@ -170,7 +170,9 @@
     if(base === 'exit'){ if(isRoot){ isRoot = false; appendText('Exiting root. Dropped to normal user.'); } else appendText('exit'); return; }
     if(base === 'whoami'){ await typeLine(isRoot ? 'root' : 'Parv (aka r00tp4rv) — Product Security Engineer'); return; }
     if(base === 'moreinfo'){ await typeLine('well versed in Web, Mobile, OSINT, Crypto and Steganography'); return; }
-    if(base === 'ctf'){ await typeLine("Flags aren't flagging these days - SG93IG1hbnkgYmFzZXMgYXJlIHRoZXJlPyAKV2prR3lYWVV4WTEyY20yWmlqMXRtOGpiQVBYRkYyR0V6UWVjczRkQVNGRmFBdHQ4RVJzblhKZ0tSSHJ3bjQ2ZDRFZU1KQ3RSQ0hvSndoZzJCS3ZhaUEzR2tpOFNzMzdkTkFkNTFGVUQ0MVdid3RvOXlENERob3RpQ2hHcDYxUnREdnVWd3dlcEhCajlkcWg5Vlh6c3pr"); return; }
+    if(base === 'ctf'){ await typeLine("Flags aren't flagging these days - SG93IG1hbnkgYmFzZXMgYXJlIHRoZXJlPyAKV2prR3lYWVV4WTEyY20yWmlqMXRtOGpiQVBYRkYyR0V6UWVjczRkQVNGRmFBdHQ4RVJzblhKZ0tSSHJ3bjQ2ZDRFZU1KQ3RSQ0hvSndoZzJCS3ZhaUEzR2tpOFNzMzdkTkFkNTFGVUQ0MVdid3RvOXlENERob3RpQ2hHcDYxUnREdnVWd3dlcEhCajlkcWg5Vlh6c3pr
+    
+    Are you root? no? then you can't find flag2"); return; }
     if(base === 'pwd'){ await typeLine(cwd); return; }
 
     if(base === 'cd'){
