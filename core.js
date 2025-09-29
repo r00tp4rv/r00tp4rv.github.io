@@ -228,7 +228,7 @@ if (base === 'ctf') {
       const val = parts.slice(1).join(' ');
       if(!val){ await typeLine('Usage: flag <flag>'); return; }
       await typeLine('% Checking flag...');
-      const ok = (val.trim() === 'r00tp4rv{g07_y0u_by_7h3_b4ll5}' || val.trim() === 'r00tp4rv{r0071n9_15_fuN}');
+      const ok = (val.trim() === 'r00tp4rv{g07_y0u_by_7h3_b4ll5}' || val.trim() === 'r00tp4rv{r0071n9_15_fuN}' || val.trim() === 'r00tp4rv{R1t1_h1d3s_1n_Sh4d0ws}' );
       if(ok){ appendRaw('<span style="color:var(--neon);font-weight:700">✔ CORRECT — flag accepted</span>'); window.updateFlagCard && window.updateFlagCard(true); }
       else { appendRaw('<span style="color:var(--fail);font-weight:700">✖ INCORRECT — try again</span>'); window.updateFlagCard && window.updateFlagCard(false); }
       return;
