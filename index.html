@@ -1,460 +1,85 @@
 <!doctype html>
 <html lang="en">
-<link rel="icon" type="image/png" href="/favicon.png" />
-<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-<link rel="apple-touch-icon" href="/favicon-180x180.png">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1" />
-<meta property="og:image" content="https://r00tp4rv.github.io/assets/r00tp4rv-logo.png" />
-<title>r00tp4rv's Portfolio</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1" />
+  <title>r00tp4rv — Interactive Terminal</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
-
-<style>
-:root{
-  --neon:#7CFF4C;
-  --muted:#7ca39a;
-  --bg1:#000004;
-  --fail:#ff5f57;
-  --accent:#00ffa6;
-}
-*{box-sizing:border-box}
-html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg1),#02060a);font-family:Inter,'Share Tech Mono',monospace;color:#e6f7df;overflow:auto;-webkit-font-smoothing:antialiased}
-a{color:var(--neon);text-decoration:none}
-
-/* background overlays */
-#matrix{position:fixed;inset:0;z-index:0;opacity:0.14;pointer-events:none}
-.overlay{position:fixed;inset:0;pointer-events:none;z-index:1}
-.noise{mix-blend-mode:overlay;opacity:0.06}
-.scanlines{background:repeating-linear-gradient(0deg,rgba(255,255,255,0.008),rgba(255,255,255,0.008) 1px,transparent 1px,transparent 4px);opacity:0.03}
-
-/* header / nav */
-.header{position:relative;z-index:2;display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid rgba(124,255,76,0.04);backdrop-filter: blur(2px)}
-.brand{font-family:'Share Tech Mono';font-size:28px;color:var(--neon);letter-spacing:1px}
-.navlinks{display:flex;gap:20px;font-family:'Share Tech Mono';font-size:14px}
-.navlinks a{color:var(--neon);text-decoration:none}
-
-/* page container */
-.container{max-width:1200px;margin:18px auto;padding:0 16px 56px;position:relative;z-index:2;display:flex;flex-direction:column;gap:18px}
-
-/* main content area: two columns */
-.main-grid{
-  display:grid;
-  grid-template-columns: 1fr 360px;
-  gap:18px;
-  align-items:start;
-}
-
-/* terminal card */
-.mac-term{
-  background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.03));
-  border-radius:12px;overflow:hidden;border:1px solid rgba(124,255,76,0.03);box-shadow:0 30px 60px rgba(0,0,0,0.6);
-  display:flex;flex-direction:column;height:560px;
-}
-.mac-bar{display:flex;align-items:center;gap:10px;padding:12px 14px;background:#071017;border-bottom:1px solid rgba(124,255,76,0.02)}
-.traffic{display:flex;gap:8px}
-.dot{width:12px;height:12px;border-radius:50%}
-.dot.red{background:#ff5f57}.dot.yellow{background:#ffbd2e}.dot.green{background:#28c840}
-.mac-title{flex:1;text-align:center;color:rgba(124,255,76,0.75);font-family:'Share Tech Mono';font-size:13px}
-
-.term-wrap{padding:18px;display:flex;flex-direction:column;gap:12px;flex:1}
-.terminal{color:var(--neon);font-family:'Share Tech Mono';font-size:15px;line-height:1.6;overflow:auto;padding-right:8px;border-radius:8px;-webkit-overflow-scrolling:touch;background:transparent;flex:1}
-.line{white-space:pre-wrap;margin-bottom:8px}
-.prompt{color:var(--neon)}
-
-/* input */
-.cmdline{display:flex;gap:10px;align-items:center;margin-top:10px}
-.prompt-label{min-width:70px;color:var(--neon);font-family:'Share Tech Mono'}
-.input-wrap{flex:1;background:rgba(255,255,255,0.01);padding:10px;border-radius:10px;border:1px solid rgba(124,255,76,0.03)}
-.input{background:transparent;border:0;outline:none;color:var(--neon);font-size:15px;width:100%;padding:6px 0}
-
-/* flag checker card (right column) */
-.flag-card{
-  background:linear-gradient(180deg,rgba(0,0,0,0.12),rgba(0,0,0,0.04));
-  padding:12px;border-radius:10px;border:1px solid rgba(124,255,76,0.03);font-family:'Share Tech Mono';
-  height:560px;display:flex;flex-direction:column;gap:12px;box-shadow:0 30px 60px rgba(0,0,0,0.5)
-}
-.flag-title{display:flex;align-items:center;gap:10px}
-.flag-title .prompt{padding:6px 10px;border-radius:6px}
-.flag-body{display:flex;flex-direction:column;gap:10px;flex:1}
-.flag-input-wrap{display:flex;gap:8px;align-items:center}
-.flag-input{flex:1;background:transparent;border:1px solid rgba(124,255,76,0.06);padding:12px;border-radius:8px;color:var(--neon);font-family:'Share Tech Mono'}
-.flag-btn{padding:10px 12px;border-radius:8px;background:linear-gradient(90deg,var(--neon),var(--accent));color:#001;border:0;cursor:pointer;font-weight:700}
-.flag-status{min-height:36px;display:flex;align-items:center;gap:10px;font-size:14px}
-.flag-status .ok{color:var(--neon);font-weight:700}
-.flag-status .bad{color:var(--fail);font-weight:700}
-
-/* spinner */
-.spinner{width:18px;height:18px;border-radius:50%;border:2px solid rgba(255,255,255,0.06);border-top-color:var(--neon);animation:spin 800ms linear infinite;display:inline-block}
-@keyframes spin{to{transform:rotate(360deg)}}
-
-/* victory glow */
-.victory{box-shadow:0 12px 36px rgba(124,255,76,0.12), inset 0 -6px 30px rgba(124,255,76,0.02);animation:pop 420ms ease both}
-@keyframes pop{from{transform:scale(0.98);opacity:0}to{transform:none;opacity:1}}
-
-/* stats block (moved between main-grid and footer) */
-.stats-block{
-  display:flex;
-  gap:14px;
-  align-items:center;
-  justify-content:center;
-  margin-top:6px;
-  flex-wrap:wrap;
-}
-.stat{
-  flex:1;
-  min-width:160px;
-  max-width:320px;
-  background:linear-gradient(180deg,rgba(0,0,0,0.12),rgba(0,0,0,0.04));
-  padding:14px;border-radius:10px;border:1px solid rgba(124,255,76,0.03);
-  text-align:center;box-shadow:0 10px 30px rgba(0,0,0,0.6);
-}
-.stat .n{font-family:'Share Tech Mono';font-size:36px;color:var(--neon);line-height:1}
-.stat .l{color:var(--muted);font-size:13px;margin-top:8px;letter-spacing:1px}
-
-/* footer */
-.footer{margin-top:12px;text-align:center;color:var(--muted);font-size:13px}
-.logo-icon {
-  display: inline-flex;
-  align-items: center;
-  margin-right: 8px;
-  color: var(--neon);
-}
-
-.logo-icon svg .shackle {
-  transform-origin: center top;
-  animation: openclose 2s infinite;
-}
-
-@keyframes openclose {
-  0%, 100% { transform: rotate(0deg); }
-  50% { transform: rotate(-15deg); }
-}
-/* responsive: stack elements */
-@media (max-width:980px){
-  .main-grid{grid-template-columns:1fr;grid-auto-rows:auto}
-  .mac-term,.flag-card{height:auto}
-}
-@media (max-width:640px){
-  .brand{font-size:20px}
-  .prompt-label{min-width:56px}
-  .input{font-size:14px}
-  .stat .n{font-size:28px}
-}
-
-</style>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/png" href="/favicon.png" />
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-<canvas id="matrix" aria-hidden="true"></canvas>
-<div class="overlay noise" aria-hidden="true"></div>
-<div class="overlay scanlines" aria-hidden="true"></div>
+  <!-- matrix background + overlays -->
+  <canvas id="matrix" aria-hidden="true"></canvas>
+  <div class="overlay noise" aria-hidden="true"></div>
+  <div class="overlay scanlines" aria-hidden="true"></div>
 
-<header class="header" role="banner">
-  <div class="brand">
-    <span class="logo-icon">
-      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
-        <rect x="6" y="10" width="12" height="10" rx="2"/>
-        <path class="shackle" d="M8 10V7a4 4 0 0 1 8 0v3"/>
-      </svg>
-    </span>
-    r00tp4rv
-  </div>
-  <nav class="navlinks" aria-label="main navigation">
-    <a id="nav-whoami" href="https://www.linkedin.com/in/parvbajaj" target="_blank" rel="noopener">whoami/</a>
-    <a id="nav-xp" href="xp.html">xp/</a>
-    <a id="nav-writeups" href="https://medium.com/@parvbajaj2000" target="_blank" rel="noopener">writeups/</a>
-    <a id="nav-contact" href="mailto:r00tp4rv@gmail.com">contact/</a>
-  </nav>
-</header>
+  <!-- header -->
+  <header class="header" role="banner">
+    <div class="brand">
+      <span class="logo-icon" aria-hidden="true">
+        <!-- animated lock shackle -->
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="6" y="10" width="12" height="10" rx="2"/>
+          <path class="shackle" d="M8 10V7a4 4 0 0 1 8 0v3"/>
+        </svg>
+      </span>
+      r00tp4rv
+    </div>
 
-<main class="container" role="main">
-  <!-- main two-column area -->
-  <div class="main-grid">
-    <!-- terminal (left) -->
-    <section class="mac-term" aria-labelledby="term-title">
-      <div class="mac-bar">
-        <div class="traffic" aria-hidden="true"><div class="dot red"></div><div class="dot yellow"></div><div class="dot green"></div></div>
-        <div id="term-title" class="mac-title">r00tp4rv — interactive terminal</div>
-      </div>
+    <nav class="navlinks" aria-label="main navigation">
+      <a id="nav-whoami" href="https://www.linkedin.com/in/parvbajaj" target="_blank" rel="noopener">whoami/</a>
+      <a id="nav-xp" href="xp.html">xp/</a>
+      <a id="nav-writeups" href="https://medium.com/@parvbajaj2000" target="_blank" rel="noopener">writeups/</a>
+      <a id="nav-contact" href="mailto:r00tp4rv@gmail.com">contact/</a>
+    </nav>
+  </header>
 
-      <div class="term-wrap">
-        <div id="terminal" class="terminal" role="log" aria-live="polite" tabindex="0">
-          <div class="line">Boot sequence complete. Type <strong style="color:var(--neon)">whoami</strong> to get started — or <strong style="color:var(--neon)">help</strong> for commands.</div>
+  <main class="container" role="main">
+    <div class="main-grid">
+      <!-- terminal -->
+      <section class="mac-term" aria-labelledby="term-title">
+        <div class="mac-bar">
+          <div class="traffic" aria-hidden="true"><div class="dot red"></div><div class="dot yellow"></div><div class="dot green"></div></div>
+          <div id="term-title" class="mac-title">r00tp4rv — interactive demo terminal</div>
         </div>
 
-        <div class="cmdline" role="region" aria-label="terminal input">
-          <div class="prompt-label" aria-hidden="true">$</div>
-          <div class="input-wrap">
-            <input id="cmd-input" class="input" placeholder="commands: whoami, moreinfo, ctf, flag <value>, help, clear" autocapitalize="off" autocomplete="off" />
+        <div class="term-wrap">
+          <div id="terminal" class="terminal" role="log" aria-live="polite" tabindex="0">
+            <!-- terminal-lines container created by core.js -->
           </div>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <!-- flag checker (right) -->
-    <aside class="flag-card" id="flag-card" aria-label="flag checker">
-      <div class="flag-title">
-        <div class="prompt">$</div>
-        <div style="font-family:'Share Tech Mono'">flagchecker</div>
-      </div>
-
-      <div class="flag-body">
-        <div style="font-size:13px;color:var(--muted)">Enter a flag or run <code>flag &lt;value&gt;</code> in the terminal</div>
-        <div class="flag-input-wrap">
-          <input id="flag-input" class="flag-input" placeholder="r00tp4rv{...}" autocomplete="off" />
-          <button id="flag-btn" class="flag-btn" type="button">Check</button>
+      <!-- flag checker -->
+      <aside class="flag-card" id="flag-card" aria-label="flag checker">
+        <div class="flag-title">
+          <div class="prompt">$</div>
+          <div style="font-family:'Share Tech Mono'">flagchecker</div>
         </div>
 
-        <div class="flag-status" id="flag-status" aria-live="polite"></div>
-
-    
-      </div>
-    </aside>
-  </div>
-
-  <!-- stats block (moved as you requested) -->
-  <div class="stats-block" aria-label="stats">
-    <div class="stat">
-      <div class="n" id="s-ctfs" data-target="25">0</div>
-      <div class="l">CTFs participated</div>
+        <div class="flag-body">
+          <div style="font-size:13px;color:var(--muted)">Enter a flag (format <em>r00tp4rv{...}</em>) or run <code>flag &lt;value&gt;</code> in the terminal</div>
+          <div class="flag-input-wrap">
+            <input id="flag-input" class="flag-input" placeholder="r00tp4rv{...}" autocomplete="off" />
+            <button id="flag-btn" class="flag-btn" type="button">Check</button>
+          </div>
+          <div class="flag-status" id="flag-status" aria-live="polite"></div>
+        </div>
+      </aside>
     </div>
-    <div class="stat">
-      <div class="n" id="s-awards" data-target="3">0</div>
-      <div class="l">Awards won</div>
+
+    <div class="stats-block" aria-label="stats">
+      <div class="stat"><div class="n" id="s-ctfs" data-target="25">0</div><div class="l">CTFs participated</div></div>
+      <div class="stat"><div class="n" id="s-awards" data-target="3">0</div><div class="l">Awards won</div></div>
+      <div class="stat"><div class="n" id="s-pwns" data-target="1337">0</div><div class="l">Pwns</div></div>
     </div>
-    <div class="stat">
-      <div class="n" id="s-pwns" data-target="1337">0</div>
-      <div class="l">Pwns</div>
-    </div>
-  </div>
 
-  <div class="footer">Built by r00tp4rv • Enter to run • Up/Down for history • type help</div>
-</main>
+    <div class="footer">Built by r00tp4rv • Enter to run • Up/Down for history • type help</div>
+  </main>
 
-<script>
-/* ---------------- Matrix background ---------------- */
-(function(){
-  const canvas = document.getElementById('matrix');
-  const ctx = canvas.getContext('2d');
-  let W,H,cols,ypos;
-  function fit(){ W=canvas.width=innerWidth; H=canvas.height=innerHeight; cols=Math.max(8,Math.floor(W/18)); ypos=Array(cols).fill(0); }
-  window.addEventListener('resize', fit);
-  fit();
-  const letters = 'abcdefghijklmnopqrstuvwxyz0123456789@#$%&*()<>/\\\\|';
-  function frame(){
-    ctx.fillStyle = 'rgba(0,0,0,0.06)';
-    ctx.fillRect(0,0,W,H);
-    ctx.fillStyle = 'rgba(124,255,76,0.85)';
-    ctx.font = '14px "Share Tech Mono", monospace';
-    for(let i=0;i<cols;i++){
-      const ch = letters.charAt(Math.floor(Math.random()*letters.length));
-      const x = i * 18;
-      ctx.fillText(ch, x, ypos[i]*16);
-      if(ypos[i]*16 > H && Math.random() > 0.98) ypos[i] = 0;
-      ypos[i]++;
-    }
-    requestAnimationFrame(frame);
-  }
-  requestAnimationFrame(frame);
-})();
-
-/* ---------------- Terminal commands & behavior ---------------- */
-(function(){
-  const terminal = document.getElementById('terminal');
-  const input = document.getElementById('cmd-input');
-
-  let history = [];
-  let histIndex = -1;
-
-  function appendLine(html, cls='line'){
-    const el = document.createElement('div'); el.className = cls; el.innerHTML = html; terminal.appendChild(el); terminal.scrollTop = terminal.scrollHeight; return el;
-  }
-
-  function escapeHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-
-  function typeLine(text, speed=12){
-    return new Promise(resolve=>{
-      const el = document.createElement('div'); el.className='line'; terminal.appendChild(el);
-      let i = 0;
-      function step(){
-        if(i <= text.length){
-          el.innerHTML = escapeHtml(text.slice(0,i));
-          terminal.scrollTop = terminal.scrollHeight;
-          i++;
-          setTimeout(step, speed);
-        } else resolve();
-      }
-      step();
-    });
-  }
-
-  // helper: update flag-card status from terminal
-  function updateFlagCard(success){
-    const statusEl = document.getElementById('flag-status');
-    const card = document.getElementById('flag-card');
-    if(success){
-      statusEl.innerHTML = '<span class="ok">✔ CORRECT — flag accepted</span>';
-      card.classList.add('victory');
-      setTimeout(()=> card.classList.remove('victory'), 1600);
-    } else {
-      statusEl.innerHTML = '<span class="bad">✖ INCORRECT</span>';
-      card.classList.remove('victory');
-    }
-  }
-
-  // flag checking logic
-  const CORRECT_FLAG = 'r00tp4rv{g07_y0u_by_7h3_b4ll5}';
-  function isFlagValid(val){ return String(val).trim() === CORRECT_FLAG; }
-
-  async function runCommand(raw){
-    const cmdline = (raw||'').trim(); if(!cmdline) return;
-    appendLine('$ ' + escapeHtml(cmdline), 'line prompt');
-
-    history.unshift(cmdline); histIndex = -1;
-
-    const parts = cmdline.split(/\s+/);
-    const cmd = parts[0].toLowerCase();
-
-    if(cmd === 'clear'){
-      terminal.innerHTML = '';
-      appendLine('Boot sequence complete. Type <strong style="color:var(--neon)">whoami</strong> to get started.');
-      return;
-    }
-
-    if(cmd === 'help'){
-      await typeLine('available: whoami | moreinfo | ctf | flag <value> | help | clear');
-      return;
-    }
-
-    if(cmd === 'whoami'){
-      await typeLine('Parv (aka r00tp4rv) — Product Security Engineer');
-      await typeLine('CTF player & pentester based in India.');
-      return;
-    }
-
-    if(cmd === 'moreinfo'){
-      await typeLine('well versed in Web, Mobile, OSINT, Crypto and Steganography');
-      return;
-    }
-
-    if(cmd === 'ctf'){
-      const blob = "Flags aren't flagging these days - SG93IG1hbnkgYmFzZXMgYXJlIHRoZXJlPyAKV2prR3lYWVV4WTEyY20yWmlqMXRtOGpiQVBYRkYyR0V6UWVjczRkQVNGRmFBdHQ4RVJzblhKZ0tSSHJ3bjQ2ZDRFZU1KQ3RSQ0hvSndoZzJCS3ZhaUEzR2tpOFNzMzdkTkFkNTFGVUQ0MVdid3RvOXlENERob3RpQ2hHcDYxUnREdnVWd3dlcEhCajlkcWg5Vlh6c3pr";
-      await typeLine(blob);
-      return;
-    }
-
-    if(cmd === 'flag'){
-      const val = parts.slice(1).join(' ');
-      if(!val){ await typeLine('Usage: flag <flag>'); return; }
-      await typeLine('% Checking flag...');
-      const result = isFlagValid(val);
-      if(result){
-        appendLine('<span style="color:var(--neon);font-weight:700">✔ CORRECT — flag accepted</span>');
-        updateFlagCard(true);
-      } else {
-        appendLine('<span style="color:var(--fail);font-weight:700">✖ INCORRECT — try again</span>');
-        updateFlagCard(false);
-      }
-      return;
-    }
-
-    await typeLine('Command not found: ' + cmd);
-  }
-
-  // keyboard handling
-  input.addEventListener('keydown', async (e)=>{
-    if(e.key === 'Enter'){
-      const v = input.value; input.value = ''; await runCommand(v);
-    } else if(e.key === 'ArrowUp'){
-      if(history.length === 0) return;
-      histIndex = Math.min(history.length-1, histIndex+1);
-      input.value = history[histIndex] || '';
-      e.preventDefault();
-    } else if(e.key === 'ArrowDown'){
-      if(history.length === 0) return;
-      histIndex = Math.max(-1, histIndex-1);
-      input.value = histIndex === -1 ? '' : history[histIndex];
-      e.preventDefault();
-    }
-  });
-
-  document.addEventListener('keydown',(e)=>{
-    if(e.ctrlKey || e.metaKey) return;
-    if(e.key === 'c'){ terminal.innerHTML = ''; appendLine('Boot sequence complete. Type <strong style="color:var(--neon)">whoami</strong> to get started.'); }
-    if(e.key === 'h') runCommand('help');
-  });
-
-  // make runCommand available for UI mirroring
-  window.runCommand = runCommand;
-})();
-
-/* ---------------- Flag card UI ---------------- */
-(function(){
-  const btn = document.getElementById('flag-btn');
-  const input = document.getElementById('flag-input');
-  const status = document.getElementById('flag-status');
-  const card = document.getElementById('flag-card');
-
-  function setLoading(){ status.innerHTML = '<span class="spinner" aria-hidden="true"></span><span style="color:var(--muted)"> checking…</span>'; }
-  function setOK(){ status.innerHTML = '<span class="ok">✔ CORRECT — flag accepted</span>'; card.classList.add('victory'); setTimeout(()=>card.classList.remove('victory'),1400); }
-  function setBad(){ status.innerHTML = '<span class="bad">✖ INCORRECT</span>'; card.classList.remove('victory'); }
-
-  function checkFlag(val){ return String(val).trim() === 'r00tp4rv{g07_y0u_by_7h3_b4ll5}'; }
-
-  async function runCheck(val){
-    status.innerHTML = ''; if(!val){ setBad(); return; }
-    setLoading();
-    await new Promise(r=>setTimeout(r,700));
-    if(checkFlag(val)){ setOK(); } else { setBad(); }
-  }
-
-  btn.addEventListener('click', async ()=>{
-    const val = input.value;
-    await runCheck(val);
-    if(val) window.runCommand && window.runCommand('flag ' + val);
-  });
-
-  input.addEventListener('keydown',(e)=>{
-    if(e.key === 'Enter'){ e.preventDefault(); btn.click(); }
-  });
-
-  // expose small helper for terminal to call
-  window.updateFlagCard = (ok) => { if(ok) setOK(); else setBad(); };
-})();
-
-/* ---------------- Stats count-up ---------------- */
-(function(){
-  function animateCount(el, target, duration=1000){
-    let start=null;
-    function step(ts){
-      if(!start) start = ts;
-      const progress = Math.min((ts - start) / duration, 1);
-      el.textContent = Math.floor(progress * target);
-      if(progress < 1) requestAnimationFrame(step);
-      else el.textContent = target;
-    }
-    requestAnimationFrame(step);
-  }
-  const list = [
-    {id:'s-ctfs', target:25},
-    {id:'s-awards', target:3},
-    {id:'s-pwns', target:1337},
-  ];
-  list.forEach(item=>{
-    const el = document.getElementById(item.id);
-    if(!el) return;
-    el.dataset.target = item.target;
-    if('IntersectionObserver' in window){
-      const io = new IntersectionObserver((entries,obs)=>{
-        entries.forEach(en=>{ if(en.isIntersecting){ animateCount(en.target, Number(en.target.dataset.target||0), 1200); obs.unobserve(en.target); } });
-      }, {threshold:0.35});
-      io.observe(el);
-    } else animateCount(el, item.target, 1200);
-  });
-})();
-</script>
+  <script src="core.js"></script>
 </body>
 </html>
