@@ -199,71 +199,51 @@ a{color:var(--neon)}
   .flag-input,.flag-btn{padding:14px}
   .terminal{max-height:44vh;font-size:15px;padding:14px}
 }
-/* ---------------- Mobile hamburger & sidebar ---------------- */
+/* ---------- Hamburger: Long thin classic bars (neon) ---------- */
+/* base button */
 .hamburger{
-  display:none;
-  background:transparent;
-  border:0;
-  cursor:pointer;
-  padding:8px;
-  border-radius:8px;
-  align-items:center;
-  justify-content:center;
-  width:44px;height:44px;
-  color:var(--neon);
-  transition:transform .12s ease;
+  display: none;           /* shown via media query on small screens */
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 8px;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  color: var(--neon);
+  transition: transform .12s ease;
+  position: relative;
+  z-index: 70;
 }
-.hamburger .bar {
-  display:block;
-  width:14px;          /* shorter width = like "-" instead of "—" */
-  height:3px;          /* a bit thicker */
-  border-radius:2px;
-  background:var(--neon);
-  margin:4px auto;     /* auto centers the short dash */
-  transition: transform .25s ease, opacity .18s ease, background .18s;
+
+/* the three thin bars */
+.hamburger .bar{
+  display: block;
+  width: 22px;                 /* long thin bars */
+  height: 2px;                 /* thin */
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--neon), #00ffa6);
+  margin: 3px 0;
+  box-shadow: 0 0 6px rgba(124,255,76,0.22), 0 0 14px rgba(124,255,76,0.08);
+  transform-origin: center;
+  transition: transform 320ms cubic-bezier(.2,.9,.2,1), opacity 200ms ease, background 220ms ease;
 }
+
+/* open state: morph into an X */
 .hamburger.open .bar1{ transform: translateY(5px) rotate(45deg); }
-.hamburger.open .bar2{ opacity:0; transform: scaleX(.2); }
+.hamburger.open .bar2{ opacity: 0; transform: scaleX(.2); }
 .hamburger.open .bar3{ transform: translateY(-5px) rotate(-45deg); }
 
-.mobile-sidebar{
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: min(320px, 88vw);
-  height: 100vh;
-  background: linear-gradient(180deg, rgba(0,0,0,0.92), rgba(0,0,0,0.86));
-  border-right: 1px solid rgba(124,255,76,0.06);
-  box-shadow: 20px 30px 80px rgba(0,0,0,0.9);
-  transform: translateX(-110%);
-  transition: transform 320ms cubic-bezier(.2,.9,.2,1);
-  z-index: 60;
-  backdrop-filter: blur(4px);
-  color:var(--neon);
-  display:flex;
-  flex-direction:column;
-  padding: 18px;
-  pointer-events: none;
+/* subtle shimmer when hovered/focused (desktop accessible) */
+.hamburger:hover .bar, .hamburger:focus .bar{
+  filter: brightness(1.05);
+  transform-origin: center;
 }
-.mobile-sidebar.open{
-  transform: translateX(0%);
-  pointer-events: auto;
-}
-.mobile-sidebar-inner{ display:flex; flex-direction:column; gap:16px; height:100%; }
-.close-sidebar{ margin-left:auto; background:transparent; border:0; color:var(--neon); font-size:28px; padding:6px; cursor:pointer; }
-.mobile-brand{ display:flex; align-items:center; gap:10px; font-family:'Share Tech Mono'; font-size:18px; color:var(--neon); padding-bottom:8px; border-bottom:1px solid rgba(124,255,76,0.04);}
-.brand-txt{ font-weight:700; letter-spacing:1px; }
-.mobile-navlist{ list-style:none; padding:12px 0 0 0; margin:0; display:flex; flex-direction:column; gap:12px; }
-.mobile-navlist a{ color:var(--neon); text-decoration:none; font-family:'Share Tech Mono'; font-size:16px; padding:8px 6px; border-radius:6px; transition: background .12s ease; }
-.mobile-navlist a:hover, .mobile-navlist a:focus{ background: rgba(124,255,76,0.04); outline:none; }
 
-.mobile-backdrop{
-  position:fixed; inset:0; background: rgba(0,0,0,0.5); opacity:0; transition: opacity 240ms ease; z-index:55; pointer-events:none;
-}
-.mobile-backdrop.open{ opacity:1; pointer-events:auto; }
-
-/* small-screen only */
+/* mobile only: show hamburger, hide desktop nav */
 @media (max-width:720px){
   .hamburger{ display:inline-flex; }
-  .navlinks{ display:none !important; }
+  .navlinks{ display:none !important; } /* hide desktop nav on small screens */
 }
