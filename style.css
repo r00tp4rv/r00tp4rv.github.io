@@ -200,9 +200,10 @@ a{color:var(--neon)}
   .terminal{max-height:44vh;font-size:15px;padding:14px}
 }
 /* ---------- Hamburger: Long thin classic bars (neon) ---------- */
-/* base button */
+/* ---------- Hamburger: Long thin classic bars (neon) ---------- */
+/* HIDE hamburger by default, only show explicitly inside header on mobile. */
 .hamburger{
-  display: none;           /* shown via media query on small screens */
+  display: none !important;  /* hidden by default on desktop */
   background: transparent;
   border: 0;
   cursor: pointer;
@@ -218,11 +219,11 @@ a{color:var(--neon)}
   z-index: 70;
 }
 
-/* the three thin bars */
+/* three thin bars */
 .hamburger .bar{
   display: block;
-  width: 22px;                 /* long thin bars */
-  height: 2px;                 /* thin */
+  width: 22px;
+  height: 2px;
   border-radius: 2px;
   background: linear-gradient(90deg, var(--neon), #00ffa6);
   margin: 3px 0;
@@ -231,19 +232,21 @@ a{color:var(--neon)}
   transition: transform 320ms cubic-bezier(.2,.9,.2,1), opacity 200ms ease, background 220ms ease;
 }
 
-/* open state: morph into an X */
+/* open state -> X */
 .hamburger.open .bar1{ transform: translateY(5px) rotate(45deg); }
 .hamburger.open .bar2{ opacity: 0; transform: scaleX(.2); }
 .hamburger.open .bar3{ transform: translateY(-5px) rotate(-45deg); }
 
-/* subtle shimmer when hovered/focused (desktop accessible) */
+/* subtle shimmer on hover/focus */
 .hamburger:hover .bar, .hamburger:focus .bar{
   filter: brightness(1.05);
-  transform-origin: center;
 }
 
-/* mobile only: show hamburger, hide desktop nav */
+/* MOBILE: show only the hamburger that is inside header, hide desktop nav */
 @media (max-width:720px){
-  .hamburger{ display:inline-flex; }
-  .navlinks{ display:none !important; } /* hide desktop nav on small screens */
+  /* hide the normal nav links on mobile */
+  .navlinks { display: none !important; }
+
+  /* show the hamburger only when it's a child of header */
+  header .hamburger { display: inline-flex !important; }
 }

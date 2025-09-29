@@ -543,3 +543,34 @@ if (base === 'ctf') {
     if(e.target.tagName.toLowerCase() === 'a') closeSidebar();
   });
 })();
+/* ---------- Safety: hide duplicate hamburger elements & sync ARIA ---------- */
+(function(){
+  // Hide all hamburger elements except the first (defensive)
+  const hamburgers = Array.from(document.querySelectorAll('.hamburger'));
+  if(hamburgers.length > 1){
+    hamburgers.slice(1).forEach(h => h.style.display = 'none');
+  }
+
+  // make sure only header's hamburger is used for aria control (defensive)
+  const headerHamb = document.querySelector('header .hamburger');
+  if(headerHamb){
+    hamburgers.forEach(h => {
+      if(h !== headerHamb){
+        h.setAttribute('aria-hidden','true');
+        h.setAttribute('tabindex','-1');
+      } else {
+        h.setAttribute('aria-hidden','false');
+      }
+    });
+  }
+
+  // If someone left a duplicate mobile-sidebar/backdrop pairs, hide duplicates too
+  const sidebars = Array.from(document.querySelectorAll('#mobile-sidebar'));
+  if(sidebars.length > 1){
+    sidebars.slice(1).forEach(s => s.style.display = 'none');
+  }
+  const backdrops = Array.from(document.querySelectorAll('#mobile-backdrop'));
+  if(backdrops.length > 1){
+    backdrops.slice(1).forEach(b => b.style.display = 'none');
+  }
+})();
