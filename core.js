@@ -54,7 +54,7 @@
       'home': { type: 'dir', children: {} },
       'Users': { type: 'dir', children: {
         'r00tp4rv': { type: 'dir', children: {
-          'notes.txt': { type:'file', content: "Personal notes." }
+          'notes.txt': { type:'file', content: "You might know the 8*8 encoding but the real question is how many times" }
         }},
         'r00tr1t1': { type:'dir', children: {
           'rootpass.txt': { type:'file', content: 'VmpGYWIxTXlTa2hXYkdoUVZrVmFjVmxzVW5OTmJIQkdVbFJzVVZWVU1Eaz0' },
