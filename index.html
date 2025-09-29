@@ -35,8 +35,42 @@
       <a id="nav-writeups" href="https://medium.com/@parvbajaj2000" target="_blank" rel="noopener">writeups/</a>
       <a id="nav-contact" href="mailto:r00tp4rv@gmail.com">contact/</a>
     </nav>
+    
+      <!-- mobile hamburger (visible only on small screens) -->
+  <button id="hamburger" class="hamburger" aria-label="Open menu" aria-controls="mobile-sidebar" aria-expanded="false">
+    <span class="bar bar1"></span>
+    <span class="bar bar2"></span>
+    <span class="bar bar3"></span>
+  </button>
   </header>
+<!-- mobile sidebar (hidden on desktop) -->
+<nav id="mobile-sidebar" class="mobile-sidebar" aria-hidden="true" aria-label="Mobile navigation">
+  <div class="mobile-sidebar-inner">
+    <button id="close-sidebar" class="close-sidebar" aria-label="Close menu">&times;</button>
+    <div class="mobile-brand">
+      <span class="logo-icon" aria-hidden="true">
+        <!-- tiny svg (matches your header svg) -->
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="3" y="3" width="18" height="18" rx="4" stroke="currentColor" stroke-width="1.2" fill="rgba(0,0,0,0.35)"></rect>
+          <path d="M7 12h10M7 8h6M7 16h10" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+        </svg>
+      </span>
+      <span class="brand-txt">r00tp4rv</span>
+    </div>
 
+    <ul class="mobile-navlist">
+      <li><a id="m-whoami" href="https://www.linkedin.com/in/parvbajaj" target="_blank" rel="noopener">whoami/</a></li>
+      <li><a id="m-xp" href="xp.html">xp/</a></li>
+      <li><a id="m-writeups" href="https://medium.com/@parvbajaj2000" target="_blank" rel="noopener">writeups/</a></li>
+      <li><a id="m-contact" href="mailto:r00tp4rv@gmail.com">contact/</a></li>
+    </ul>
+
+    <div class="mobile-footer">Built by r00tp4rv</div>
+  </div>
+</nav>
+
+<!-- backdrop overlay -->
+<div id="mobile-backdrop" class="mobile-backdrop" tabindex="-1" aria-hidden="true"></div>
   <main class="container" role="main">
     <div class="main-grid">
       <!-- terminal -->
