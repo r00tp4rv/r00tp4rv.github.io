@@ -94,7 +94,9 @@ I have heard that flag_2 hides in shadows
 Are you root? no? then you can't find flag_3
 
 How about a little misc for flag_4:
-aHR0cHM6Ly9kcml2ZS5nb29nbGUuY29tL2RyaXZlL2ZvbGRlcnMvMUtVdHlDZkpZazgwdFZZYmRSNFNycS1nTW1Hd0s3TmNMP3VzcD1zaGFyZV9saW5r`
+aHR0cHM6Ly9kcml2ZS5nb29nbGUuY29tL2RyaXZlL2ZvbGRlcnMvMUtVdHlDZkpZazgwdFZZYmRSNFNycS1nTW1Hd0s3TmNMP3VzcD1zaGFyZV9saW5r
+
+OSINT final flag_5: aHR0cHM6Ly9kcml2ZS5nb29nbGUuY29tL2RyaXZlL2ZvbGRlcnMvMXN3Tldnd1F6UDBvbTY2b29oUUc2QmhWSlhaS2NlczVLP3VzcD1zaGFyaW5n`
     };
   })();
 
@@ -235,7 +237,7 @@ aHR0cHM6Ly9kcml2ZS5nb29nbGUuY29tL2RyaXZlL2ZvbGRlcnMvMUtVdHlDZkpZazgwdFZZYmRSNFNy
       const val = parts.slice(1).join(' ');
       if(!val){ await typeLine('Usage: flag <flag>'); return; }
       await typeLine('% Checking flag...');
-      const ok = (val.trim() === 'r00tp4rv{g07_y0u_by_7h3_b4ll5}' || val.trim() === 'r00tp4rv{r0071n9_15_fuN}' || val.trim() === 'r00tp4rv{R1t1_h1d3s_1n_Sh4d0ws}' || val.trim() === 'r00tp4rv{st3g0_f4ck3d_m3_up}');
+      const ok = (val.trim() === 'r00tp4rv{g07_y0u_by_7h3_b4ll5}' || val.trim() === 'r00tp4rv{r0071n9_15_fuN}' || val.trim() === 'r00tp4rv{R1t1_h1d3s_1n_Sh4d0ws}' || val.trim() === 'r00tp4rv{st3g0_f4ck3d_m3_up}' || val.trim() === 'r00tp4rv{cr4xy_051nt_sk1llz}');
       if(ok){ appendRaw('<span style="color:var(--neon);font-weight:700">✔ CORRECT — flag accepted</span>'); window.updateFlagCard && window.updateFlagCard(true); }
       else { appendRaw('<span style="color:var(--fail);font-weight:700">✖ INCORRECT — try again</span>'); window.updateFlagCard && window.updateFlagCard(false); }
       return;
@@ -407,7 +409,7 @@ aHR0cHM6Ly9kcml2ZS5nb29nbGUuY29tL2RyaXZlL2ZvbGRlcnMvMUtVdHlDZkpZazgwdFZZYmRSNFNy
   }
   function addStartupLines(){
     appendText('Last login: ' + formattedLastLogin());
-    appendText('Type help to get started. Can you find all 4 flags xD');
+    appendText('Type help to get started. Can you find all 5 flags xD');
   }
 
   // init
@@ -445,7 +447,7 @@ aHR0cHM6Ly9kcml2ZS5nb29nbGUuY29tL2RyaXZlL2ZvbGRlcnMvMUtVdHlDZkpZazgwdFZZYmRSNFNy
       const status = document.getElementById('flag-status');
       status.innerHTML = '<span style="color:var(--muted)">checking…</span>';
       await new Promise(r=>setTimeout(r,700));
-      const ok = (val === 'r00tp4rv{g07_y0u_by_7h3_b4ll5}' || val === 'r00tp4rv{r0071n9_15_fuN}' || val === 'r00tp4rv{R1t1_h1d3s_1n_Sh4d0ws}' || val === 'r00tp4rv{st3g0_f4ck3d_m3_up}');
+      const ok = (val === 'r00tp4rv{g07_y0u_by_7h3_b4ll5}' || val === 'r00tp4rv{r0071n9_15_fuN}' || val === 'r00tp4rv{R1t1_h1d3s_1n_Sh4d0ws}' || val === 'r00tp4rv{st3g0_f4ck3d_m3_up}' || val === 'r00tp4rv{cr4xy_051nt_sk1llz}');
       window.updateFlagCard(ok);
     });
     input.addEventListener('keydown', e=>{ if(e.key === 'Enter'){ e.preventDefault(); btn.click(); } });
