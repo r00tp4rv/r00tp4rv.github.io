@@ -247,34 +247,105 @@ OSINT final flag_5: aHR0cHM6Ly9kcml2ZS5nb29nbGUuY29tL2RyaXZlL2ZvbGRlcnMvMXN3Tldn
   }
 
   /* ---------- Masked password prompt ---------- */
-  function createMaskedPasswordPrompt(){
-    const row = document.createElement('div'); row.className = 'prompt-row';
-    const label = document.createElement('span'); label.className = 'user'; label.textContent = 'Password:';
-    const input = document.createElement('span'); input.className = 'cmd-line empty pwd'; input.setAttribute('contenteditable','true'); input.setAttribute('spellcheck','false'); input.setAttribute('role','textbox');
-    input.dataset.real = '';
-    row.appendChild(label); row.appendChild(input);
-    lines.appendChild(row);
-    terminal.scrollTop = terminal.scrollHeight;
-    placeCaretAtEnd(input);
-    input.focus();
+function createMaskedPasswordPrompt(){
+  const row = document.createElement('div'); row.className = 'prompt-row';
+  const label = document.createElement('span'); label.className = 'user'; label.textContent = 'Password:';
+  const input = document.createElement('span'); input.className = 'cmd-line empty pwd'; input.setAttribute('contenteditable','true');
+  input.setAttribute('spellcheck','false'); input.setAttribute('role','textbox');
+  input.dataset.real = '';
+  row.appendChild(label); row.appendChild(input);
+  lines.appendChild(row);
+  terminal.scrollTop = terminal.scrollHeight;
+  placeCaretAtEnd(input);
+  input.focus();
 
-    function finishPasswordInput(){
-      awaitingSudoPassword = false;
-      const real = input.dataset.real || '';
-      input.removeAttribute('contenteditable'); input.classList.remove('empty');
-      input.textContent = '••••••';
-      currentPasswordPrompt = null;
-      handleSudoPasswordSubmission(real);
-    }
-
-    input.addEventListener('keydown', function(e){
-      if(e.key === 'Enter'){ e.preventDefault(); finishPasswordInput(); return; }
-      if(e.key === 'Backspace'){ e.preventDefault(); input.dataset.real = (input.dataset.real || '').slice(0, -1); input.textContent = '•'.repeat((input.dataset.real || '').length) || ''; placeCaretAtEnd(input); return; }
-      if(e.key.length === 1 && !e.ctrlKey && !e.metaKey){ e.preventDefault(); input.dataset.real = (input.dataset.real || '') + e.key; input.textContent = '•'.repeat(input.dataset.real.length); placeCaretAtEnd(input); return; }
-    });
-
-    return input;
+  function finishPasswordInput(){
+    awaitingSudoPassword = false;
+    // normalize whitespace — trim accidental leading/trailing spaces/newlines
+    const real = (input.dataset.real || '').replace(/\r/g,'').replace(/\n/g,'').trim();
+    input.removeAttribute('contenteditable'); input.classList.remove('empty');
+    input.textContent = '••••••';
+    currentPasswordPrompt = null;
+    handleSudoPasswordSubmission(real);
   }
+
+  input.addEventListener('keydown', function(e){
+    if(e.key === 'Enter'){ e.preventDefault(); finishPasswordInput(); return; }
+    if(e.key === 'Backspace'){ e.preventDefault();
+      input.dataset.real = (input.dataset.real || '').slice(0, -1);
+      input.textContent = '•'.repeat((input.dataset.real || '').length) || '';
+      placeCaretAtEnd(input); return;
+    }
+    // printable characters
+    if(e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey){
+      e.preventDefault();
+      input.dataset.real = (input.dataset.real || '') + e.key;
+      input.textContent = '•'.repeat(input.dataset.real.length);
+      placeCaretAtEnd(input);
+      return;
+    }
+    // otherwise ignore (arrows, modifiers, etc.)
+  });
+
+  // Handle paste events (capture pasted passwords)
+  input.addEventListener('paste', function(e){
+    e.preventDefault();
+    let text = '';
+    if(e.clipboardData && e.clipboardData.getData){
+      text = e.clipboardData.getData('text/plain') || '';
+    } else {
+      text = window.clipboardData && window.clipboardData.getData ? window.clipboardData.getData('Text') : '';
+    }
+    if(!text) return;
+    input.dataset.real = (input.dataset.real || '') + text;
+    input.textContent = '•'.repeat(input.dataset.real.length);
+    placeCaretAtEnd(input);
+  });
+
+  // Fallback for IME / mobile where UA may directly change contenteditable text
+  input.addEventListener('input', function(e){
+    const txt = input.textContent || '';
+    const hasBullets = txt.indexOf('•') !== -1;
+    if(!hasBullets && txt.length > 0){
+      const cleaned = txt.replace(/\r/g,'').replace(/\n/g,'');
+      // assume cleaned is the real content inserted by the UA
+      input.dataset.real = cleaned;
+      input.textContent = '•'.repeat(input.dataset.real.length);
+    }
+    placeCaretAtEnd(input);
+  });
+
+  return input;
+}
+
+async function handleSudoPasswordSubmission(entered){
+  appendText('% Authenticating...');
+  await new Promise(r => setTimeout(r, 700));
+  // trim again to be safe
+  const candidate = (entered || '').replace(/\r/g,'').replace(/\n/g,'').trim();
+  const correct = (candidate === 'areyouroot');
+  if(correct){
+    isRoot = true;
+    appendRaw('<span style="color:var(--neon);font-weight:700">✔ Authentication successful — you are root now.</span>');
+    const termCard = document.querySelector('.mac-term');
+    if(termCard){
+      termCard.classList.add('victory');
+      setTimeout(()=>termCard.classList.remove('victory'), 1600);
+    }
+    // create fresh prompt immediately (root prompt)
+    createPrompt();
+    return;
+  } else {
+    appendRaw('<span style="color:var(--fail);font-weight:700">Sorry, try again.</span>');
+    const termCard = document.querySelector('.mac-term');
+    if(termCard){
+      termCard.classList.add('error');
+      setTimeout(()=>termCard.classList.remove('error'), 800);
+    }
+    createPrompt();
+    return;
+  }
+}
 
   async function handleSudoPasswordSubmission(entered){
     appendText('% Authenticating...');
@@ -435,24 +506,190 @@ OSINT final flag_5: aHR0cHM6Ly9kcml2ZS5nb29nbGUuY29tL2RyaXZlL2ZvbGRlcnMvMXN3Tldn
       setTimeout(()=> card.classList.remove('error'), 800);
     }
   };
-
-  /* ----------------- Flag checker button handling ----------------- */
-  (function(){
+/* ---------- Flag-checker: password shows flag (no confetti); real flag triggers confetti ---------- */
+/* ---------- Final: password reveals flag text (no confetti); real flag triggers confetti ---------- */
+(function(){
+  // Wait for DOM + robust init (retries briefly if elements are created later)
+  function initFlagChecker(attemptsLeft = 8){
     const btn = document.getElementById('flag-btn');
     const input = document.getElementById('flag-input');
-    if(!btn || !input) return;
-    btn.addEventListener('click', async ()=>{
-      const val = input.value.trim();
-      if(!val){ window.updateFlagCard(false); return; }
-      const status = document.getElementById('flag-status');
-      status.innerHTML = '<span style="color:var(--muted)">checking…</span>';
-      await new Promise(r=>setTimeout(r,700));
-      const ok = (val === 'r00tp4rv{g07_y0u_by_7h3_b4ll5}' || val === 'r00tp4rv{r0071n9_15_fuN}' || val === 'r00tp4rv{R1t1_h1d3s_1n_Sh4d0ws}' || val === 'r00tp4rv{st3g0_f4ck3d_m3_up}' || val === 'r00tp4rv{cr4xy_051nt_sk1llz}');
-      window.updateFlagCard(ok);
-    });
-    input.addEventListener('keydown', e=>{ if(e.key === 'Enter'){ e.preventDefault(); btn.click(); } });
-  })();
+    let status = document.getElementById('flag-status');
 
+    if(!btn || !input){
+      if(attemptsLeft > 0) return setTimeout(()=> initFlagChecker(attemptsLeft - 1), 200);
+      console.warn('flag-checker: missing #flag-btn or #flag-input; handler not attached.');
+      return;
+    }
+
+    if(!status){
+      const container = document.getElementById('flag-card') || document.body;
+      status = document.createElement('div');
+      status.id = 'flag-status';
+      status.className = 'flag-status';
+      container.appendChild(status);
+    }
+
+    const ROOT_PW = 'areyouroot';                         // password to reveal the flag text
+    const REAL_FLAG = 'r00tp4rv{cr4xy_051nt_sk1llz}';     // actual final flag (confetti on this)
+
+    // read input whether it's <input> or contenteditable (dataset.real)
+    function readRaw(el){
+      if(!el) return '';
+      const tag = el.tagName ? el.tagName.toUpperCase() : '';
+      if(tag === 'INPUT' || tag === 'TEXTAREA' || typeof el.value === 'string') return el.value || '';
+      if(el.dataset && typeof el.dataset.real === 'string' && el.dataset.real.length) return el.dataset.real;
+      return el.textContent || '';
+    }
+
+    // normalize: NFKC, remove zero-width/control, NBSP -> space, trim
+    function normalizeStr(s){
+      if(typeof s !== 'string') s = String(s || '');
+      s = s.normalize ? s.normalize('NFKC') : s;
+      s = s.replace(/[\u200B-\u200D\uFEFF]/g,'');
+      s = s.replace(/[\x00-\x1F\x7F]/g,'');
+      s = s.replace(/\u00A0/g,' ');
+      return s.replace(/^\s+|\s+$/g,'');
+    }
+
+    function showStatusHTML(html){
+      if(status) status.innerHTML = html;
+      else console.log('[flag-status fallback]', html.replace(/<[^>]+>/g,''));
+    }
+
+    // Confetti: simple canvas-based particle system
+    function startConfetti({durationMs = 5500, particleCount = 220} = {}){
+      if(document.getElementById('ctf-confetti-canvas')) return;
+      const canvas = document.createElement('canvas');
+      canvas.id = 'ctf-confetti-canvas';
+      canvas.style.position = 'fixed';
+      canvas.style.left = '0'; canvas.style.top = '0';
+      canvas.style.width = '100%'; canvas.style.height = '100%';
+      canvas.style.pointerEvents = 'none'; canvas.style.zIndex = 999999;
+      document.body.appendChild(canvas);
+
+      const ctx = canvas.getContext('2d');
+      let w = canvas.width = innerWidth, h = canvas.height = innerHeight;
+      window.addEventListener('resize', ()=> { w = canvas.width = innerWidth; h = canvas.height = innerHeight; });
+
+      const rand = (a,b) => a + Math.random()*(b-a);
+      const colors = ['#FFD43B','#FF6B6B','#6BCB77','#4D96FF','#C084FC','#FF9F1C'];
+      const particles = [];
+      for(let i=0;i<particleCount;i++){
+        const size = rand(6, 14);
+        particles.push({
+          x: rand(0, w),
+          y: rand(-h*0.2, h*0.6),
+          vx: rand(-2.5, 2.5),
+          vy: rand(1, 6),
+          size,
+          rot: rand(0, Math.PI*2),
+          vrot: rand(-0.15, 0.15),
+          color: colors[i % colors.length],
+          ttl: rand(durationMs*0.6, durationMs*1.2),
+          start: performance.now() - rand(0, durationMs*0.25)
+        });
+      }
+
+      let raf = null;
+      function draw(now){
+        ctx.clearRect(0,0,w,h);
+        for(let p of particles){
+          const age = now - p.start;
+          if(age > p.ttl) continue;
+          p.x += p.vx; p.y += p.vy; p.vy += 0.04; p.rot += p.vrot;
+          ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.rot);
+          ctx.fillStyle = p.color;
+          ctx.fillRect(-p.size/2, -p.size/2, p.size, p.size*0.7);
+          ctx.restore();
+        }
+        raf = requestAnimationFrame(draw);
+      }
+      raf = requestAnimationFrame(draw);
+
+      setTimeout(()=>{
+        if(raf) cancelAnimationFrame(raf);
+        canvas.style.transition = 'opacity 600ms ease'; canvas.style.opacity = '0';
+        setTimeout(()=> { try{ canvas.remove(); } catch(e){} }, 650);
+      }, durationMs);
+    }
+
+    // click handler: exact logic required
+    async function onClick(){
+      const raw = readRaw(input);
+      const norm = normalizeStr(raw);
+      console.debug('[flag-checker] raw:', raw, 'normalized:', norm);
+
+      if(!norm){
+        window.updateFlagCard && window.updateFlagCard(false);
+        showStatusHTML('<span style="color:var(--fail)">No input detected.</span>');
+        return;
+      }
+
+      showStatusHTML('<span style="color:var(--muted)">checking…</span>');
+      await new Promise(r=>setTimeout(r,700));
+
+      // === PASSWORD case (areyouroot) ===
+if(norm === ROOT_PW){
+  const html = '<span style="color:var(--neon)">✔ Correct password! here\'s the final flag <strong>' + REAL_FLAG + '</strong></span>';
+  // call the app's update; it may render a generic banner — we'll override it shortly
+  window.updateFlagCard && window.updateFlagCard(true);
+  // ensure our message shows after updateFlagCard runs
+  setTimeout(()=> {
+    showStatusHTML(html);
+    // keep the flag-card glow visible even if updateFlagCard modified DOM
+    const card = document.getElementById('flag-card');
+    if(card){ card.classList.add('final-victory'); setTimeout(()=> card.classList.remove('final-victory'), 3500); }
+  }, 30);
+  console.log('[flag-checker] password accepted -> revealed flag text (no confetti)');
+  return;
+}
+
+// === REAL FLAG case (actual flag) ===
+if(norm === REAL_FLAG){
+    const html = '<span style="color:var(--neon)">🎉 Hooray! you have successfully pwned r00tp4rv CTF!</span>';
+  window.updateFlagCard && window.updateFlagCard(true);
+  // start confetti and override the status a moment later, after any generic banner
+  setTimeout(()=> {
+    showStatusHTML(html);
+    document.documentElement.classList.add('ctf-end');
+    const card = document.getElementById('flag-card');
+    if(card){ card.classList.add('final-victory'); setTimeout(()=> card.classList.remove('final-victory'), 3500); }
+    // Now start confetti (we delay confetti a tiny bit so UI settles visually)
+    startConfetti({durationMs: 5500, particleCount: 220});
+  }, 30);
+  console.log('[flag-checker] real flag accepted -> confetti started');
+  return;
+}      // === OTHER FLAGS / FALLBACKS ===
+      const ok = (
+        norm === 'r00tp4rv{g07_y0u_by_7h3_b4ll5}' ||
+        norm === 'r00tp4rv{r0071n9_15_fuN}' ||
+        norm === 'r00tp4rv{R1t1_h1d3s_1n_Sh4d0ws}' ||
+        norm === 'r00tp4rv{st3g0_f4ck3d_m3_up}'
+      );
+      window.updateFlagCard && window.updateFlagCard(ok);
+      if(ok) showStatusHTML('<span style="color:var(--neon)">✔ CORRECT — flag accepted.</span>');
+      else showStatusHTML('<span style="color:var(--fail)">Incorrect flag.</span>');
+    }
+
+    // attach handlers (safe: remove before add)
+    btn.removeEventListener('click', onClick);
+    btn.addEventListener('click', onClick);
+
+    // enter-to-submit support
+    input.removeEventListener('keydown', enterListener);
+    input.addEventListener('keydown', enterListener);
+    function enterListener(e){
+      if(e.key === 'Enter'){ e.preventDefault(); onClick(); }
+    }
+  }
+
+  // start when DOM ready (with retries)
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', ()=> initFlagChecker(8));
+  } else {
+    initFlagChecker(8);
+  }
+})();
   /* ----------------- Count-up animation for stats ----------------- */
   (function restoreCountUp(){
     const targets = [
