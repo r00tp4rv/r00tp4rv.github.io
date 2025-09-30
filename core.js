@@ -68,7 +68,7 @@
     }
   };
 
-  // ensure /Users/r00tp4rv/chall exists with files
+  // ensure /Users/r00tp4rv/chall exists with files, and add chall.txt (moved from old ctf command)
   (function ensureChall(){
     const u = VFS.children.Users.children;
     if(!u['r00tp4rv'].children.chall){
@@ -81,6 +81,21 @@
       ch['user.txt'] = ch['user.txt'] || { type:'file', content: 'Parv Bajaj' };
       ch['flag.txt'] = ch['flag.txt'] || { type:'file', content: 'r00tp4rv{F4K3_FL4G_101}' };
     }
+
+    // NEW: add chall.txt that contains the previous `ctf` output and a misc hint for flag_4
+    const chall = u['r00tp4rv'].children.chall.children;
+    chall['chall.txt'] = {
+      type: 'file',
+      content:
+`Flag_1s aren't flagging these days - SG93IG1hbnkgYmFzZXMgYXJlIHRoZXJlPyAKV2prR3lYWVV4WTEyY20yWmlqMXRtOGpiQVBYRkYyR0V6UWVjczRkQVNGRmFBdHQ4RVJzblhKZ0tSSHJ3bjQ2ZDRFZU1KQ3RSQ0hvSndoZzJCS3ZhaUEzR2tpOFNzMzdkTkFkNTFGVUQ0MVdid3RvOXlENERob3RpQ2hHcDYxUnREdnVWd3dlcEhCajlkcWg5Vlh6c3pr
+
+I have heard that flag_2 hides in shadows
+
+Are you root? no? then you can't find flag_3
+
+How about a little misc for flag_4:
+aHR0cHM6Ly9kcml2ZS5nb29nbGUuY29tL2RyaXZlL2ZvbGRlcnMvMUtVdHlDZkpZazgwdFZZYmRSNFNycS1nTW1Hd0s3TmNMP3VzcD1zaGFyZV9saW5r`
+    };
   })();
 
   // helpers for printing / typing
@@ -166,20 +181,12 @@
     const base = parts[0].toLowerCase();
 
     if(base === 'clear'){ lines.innerHTML = ''; addStartupLines(); return; }
-    if(base === 'help'){ await typeLine('available: whoami | moreinfo | ctf | flag <value> | ls | ls -la | cat <file> | pwd | cd <dir> | sudo su | exit | help | clear'); await typeLine('Tip: press Tab to autocomplete commands & filenames.'); return; }
+    if(base === 'help'){ await typeLine('available: whoami | moreinfo | flag <value> | ls | ls -la | cat <file> | pwd | cd <dir> | sudo su | exit | help | clear'); await typeLine('Tip: press Tab to autocomplete commands & filenames.'); return; }
     if(base === 'exit'){ if(isRoot){ isRoot = false; appendText('Exiting root. Dropped to normal user.'); } else appendText('exit'); return; }
     if(base === 'whoami'){ await typeLine(isRoot ? 'root' : 'Parv (aka r00tp4rv) — Product Security Engineer'); return; }
     if(base === 'moreinfo'){ await typeLine('well versed in Web, Mobile, OSINT, Crypto and Steganography'); return; }
-if (base === 'ctf') {
-  await typeLine(`Flag_1s aren't flagging these days - SG93IG1hbnkgYmFzZXMgYXJlIHRoZXJlPyAKV2prR3lYWVV4WTEyY20yWmlqMXRtOGpiQVBYRkYyR0V6UWVjczRkQVNGRmFBdHQ4RVJzblhKZ0tSSHJ3bjQ2ZDRFZU1KQ3RSQ0hvSndoZzJCS3ZhaUEzR2tpOFNzMzdkTkFkNTFGVUQ0MVdid3RvOXlENERob3RpQ2hHcDYxUnREdnVWd3dlcEhCajlkcWg5Vlh6c3pr`);
-  if (!isRoot) {
-     await typeLine('I have heard that flag_2 hides in shadows')
-     await typeLine('Are you root? no? then you can\'t find flag_3');
-  } else {
-    await typeLine('You are root — try: cd /root && cat root.txt');
-  }
-  return;
-}
+    // ctf command removed — behavior moved to chall.txt (see /Users/r00tp4rv/chall/chall.txt)
+
     if(base === 'pwd'){ await typeLine(cwd); return; }
 
     if(base === 'cd'){
@@ -228,7 +235,7 @@ if (base === 'ctf') {
       const val = parts.slice(1).join(' ');
       if(!val){ await typeLine('Usage: flag <flag>'); return; }
       await typeLine('% Checking flag...');
-      const ok = (val.trim() === 'r00tp4rv{g07_y0u_by_7h3_b4ll5}' || val.trim() === 'r00tp4rv{r0071n9_15_fuN}' || val.trim() === 'r00tp4rv{R1t1_h1d3s_1n_Sh4d0ws}' );
+      const ok = (val.trim() === 'r00tp4rv{g07_y0u_by_7h3_b4ll5}' || val.trim() === 'r00tp4rv{r0071n9_15_fuN}' || val.trim() === 'r00tp4rv{R1t1_h1d3s_1n_Sh4d0ws}' || val.trim() === 'r00tp4rv{st3g0_f4ck3d_m3_up}');
       if(ok){ appendRaw('<span style="color:var(--neon);font-weight:700">✔ CORRECT — flag accepted</span>'); window.updateFlagCard && window.updateFlagCard(true); }
       else { appendRaw('<span style="color:var(--fail);font-weight:700">✖ INCORRECT — try again</span>'); window.updateFlagCard && window.updateFlagCard(false); }
       return;
@@ -318,7 +325,7 @@ if (base === 'ctf') {
       const { token, all } = currentToken();
       const cmdParts = all.trim().split(/\s+/);
       if(cmdParts.length === 1 && !all.endsWith(' ')){
-        const cmds = ['whoami','moreinfo','ctf','flag','ls','pwd','cd','cat','sudo','exit','help','clear'];
+        const cmds = ['whoami','moreinfo','flag','ls','pwd','cd','cat','sudo','exit','help','clear'];
         const matches = cmds.filter(c => c.startsWith(token));
         if(matches.length === 1){ input.textContent = matches[0] + ' '; placeCaretAtEnd(input); updateEmpty(); return; }
         else if(matches.length > 1){ appendText(matches.join('  ')); return; } else return;
@@ -446,7 +453,7 @@ if (base === 'ctf') {
       const status = document.getElementById('flag-status');
       status.innerHTML = '<span style="color:var(--muted)">checking…</span>';
       await new Promise(r=>setTimeout(r,700));
-      const ok = (val === 'r00tp4rv{g07_y0u_by_7h3_b4ll5}' || val === 'r00tp4rv{r0071n9_15_fuN}' || val === 'r00tp4rv{R1t1_h1d3s_1n_Sh4d0ws}');
+      const ok = (val === 'r00tp4rv{g07_y0u_by_7h3_b4ll5}' || val === 'r00tp4rv{r0071n9_15_fuN}' || val === 'r00tp4rv{R1t1_h1d3s_1n_Sh4d0ws}' || val === 'r00tp4rv{st3g0_f4ck3d_m3_up}');
       window.updateFlagCard(ok);
     });
     input.addEventListener('keydown', e=>{ if(e.key === 'Enter'){ e.preventDefault(); btn.click(); } });
