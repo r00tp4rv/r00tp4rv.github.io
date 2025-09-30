@@ -407,21 +407,13 @@ aHR0cHM6Ly9kcml2ZS5nb29nbGUuY29tL2RyaXZlL2ZvbGRlcnMvMUtVdHlDZkpZazgwdFZZYmRSNFNy
   }
   function addStartupLines(){
     appendText('Last login: ' + formattedLastLogin());
-    appendText('Boot sequence complete. Type help to get started.');
+    appendText('Type help to get started. Can you find all 4 flags xD');
   }
 
   // init
   addStartupLines();
   createPrompt();
 
-  /* ---------- Global key: Ctrl+C clears (fixed, not plain 'c') ---------- */
-  document.addEventListener('keydown', (e)=>{
-    if(e.ctrlKey && e.key.toLowerCase() === 'c'){
-      lines.innerHTML = '';
-      addStartupLines();
-      createPrompt();
-    }
-  });
 
   // expose runCommand
   window.runCommand = runCommand;
