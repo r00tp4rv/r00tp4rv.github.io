@@ -259,3 +259,165 @@ a{color:var(--neon)}
   .hamburger{ display:inline-flex; }
   .navlinks{ display:none !important; }
 }
+/* ---------- Terminal scroll UX (neon theme) ---------- */
+/* ---------- Terminal scroll UX (neon theme) — REPLACE THIS BLOCK ---------- */
+/* Theme variables (tweak these to change colors/glow) */
+:root{
+  --term-bg: rgba(4,6,6,0.55);
+  --neon: #b6ff67;
+  --neon-muted: rgba(182,255,103,0.22);
+  --neon-strong: rgba(182,255,103,0.36);
+  --root-red: #ff4d4d;
+  --root-red-muted: rgba(255,77,77,0.22);
+  --scroll-track: linear-gradient(180deg, rgba(0,0,0,0.06), rgba(0,0,0,0.02));
+  --scroll-thumb-radius: 999px;
+}
+
+/* container separation */
+.term-wrap {
+  position: relative;
+  isolation: isolate; /* keep pseudo overlays from interfering */
+}
+
+/* terminal scroll area */
+#terminal {
+  max-height: 48vh;              /* desktop */
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+  padding-right: 12px;
+  border-radius: 10px;
+  background: linear-gradient(180deg, rgba(0,0,0,0.05), rgba(255,255,255,0.01));
+  box-shadow: inset 0 0 40px rgba(0,0,0,0.45), 0 18px 40px rgba(0,0,0,0.6);
+  transition: box-shadow .22s ease, outline .22s ease;
+  outline: 1px solid rgba(0,0,0,0.04);
+}
+
+/* ---------- Custom scrollbar: WebKit (Chrome/Safari/Edge) ---------- */
+#terminal::-webkit-scrollbar { width: 10px; height: 10px; }
+#terminal::-webkit-scrollbar-track {
+  background: var(--scroll-track);
+  border-radius: var(--scroll-thumb-radius);
+  margin: 6px 0;
+}
+#terminal::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, rgba(182,255,103,0.14), rgba(182,255,103,0.24));
+  border-radius: var(--scroll-thumb-radius);
+  border: 2px solid rgba(0,0,0,0.14);
+  box-shadow: 0 0 12px rgba(182,255,103,0.08), inset 0 0 6px rgba(255,255,255,0.02);
+  transition: box-shadow .18s ease, transform .12s ease;
+}
+#terminal::-webkit-scrollbar-thumb:hover {
+  box-shadow: 0 0 20px rgba(182,255,103,0.12), inset 0 0 8px rgba(255,255,255,0.03);
+  transform: scale(1.02);
+}
+#terminal::-webkit-scrollbar-thumb:active {
+  box-shadow: 0 0 28px rgba(182,255,103,0.18), inset 0 0 10px rgba(255,255,255,0.04);
+}
+
+/* Firefox fallback */
+@supports (scrollbar-width: thin) {
+  #terminal { scrollbar-width: thin; scrollbar-color: rgba(182,255,103,0.22) transparent; }
+}
+
+/* ---------- Fade overlays (top & bottom) ---------- */
+.term-wrap::before,
+.term-wrap::after {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; pointer-events: none;
+  height: 44px;
+  z-index: 30;
+  opacity: 0;
+  transition: opacity .28s ease, transform .28s ease;
+  will-change: opacity;
+  mix-blend-mode: normal;
+}
+.term-wrap::before { top: 0; background: linear-gradient(180deg, rgba(4,6,6,0.95), rgba(4,6,6,0.0)); transform: translateY(-2px); }
+.term-wrap::after  { bottom: 0; background: linear-gradient(0deg, rgba(4,6,6,0.95), rgba(4,6,6,0.0)); transform: translateY(2px); }
+.term-wrap.has-scroll::before,
+.term-wrap.has-scroll::after { opacity: 1; transform: translateY(0); }
+
+/* ---------- Scroll-to-bottom button (with unread badge) ---------- */
+#scroll-bottom-btn {
+  position: absolute;
+  right: 14px;
+  bottom: 18px;
+  z-index: 60;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 9px;
+  background: linear-gradient(180deg, rgba(0,0,0,0.46), rgba(0,0,0,0.22));
+  border: 1px solid rgba(182,255,103,0.07);
+  box-shadow: 0 10px 26px rgba(0,0,0,0.6), 0 0 10px rgba(182,255,103,0.06);
+  color: var(--neon);
+  cursor: pointer;
+  backdrop-filter: blur(4px);
+  transition: transform .14s ease, box-shadow .14s ease, opacity .18s ease;
+  opacity: 0; pointer-events: none;
+}
+#scroll-bottom-btn.show { display:flex; opacity:1; pointer-events:auto; transform: translateY(0); animation: pop .24s ease; }
+#scroll-bottom-btn svg { width: 16px; height:16px; display:block; }
+#scroll-bottom-btn .badge {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(0,0,0,0.36), rgba(0,0,0,0.12));
+  color: var(--neon);
+  font-size: 11px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(182,255,103,0.06);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+}
+@keyframes pop { from{transform:scale(.96);opacity:0} to{transform:scale(1);opacity:1} }
+
+/* ---------- Root (red) variant (when .term-wrap.is-root) ---------- */
+.term-wrap.is-root #terminal::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, rgba(255,77,77,0.14), rgba(255,77,77,0.28));
+  box-shadow: 0 0 12px rgba(255,77,77,0.07), inset 0 0 6px rgba(255,255,255,0.02);
+}
+.term-wrap.is-root #scroll-bottom-btn {
+  border-color: rgba(255,77,77,0.07);
+  box-shadow: 0 10px 26px rgba(0,0,0,0.6), 0 0 12px rgba(255,77,77,0.06);
+  color: var(--root-red);
+}
+.term-wrap.is-root #scroll-bottom-btn .badge { color: var(--root-red); border-color: rgba(255,77,77,0.06); }
+
+/* subtle glow when scrolled */
+.term-wrap.has-scroll #terminal { box-shadow: inset 0 0 40px rgba(0,0,0,0.45), 0 22px 44px rgba(0,0,0,0.6), 0 0 20px rgba(124,255,76,0.02); }
+.term-wrap.is-root.has-scroll #terminal { box-shadow: inset 0 0 40px rgba(0,0,0,0.5), 0 22px 44px rgba(0,0,0,0.6), 0 0 20px rgba(255,77,77,0.03); }
+
+/* small focus ring for accessibility */
+#terminal:focus { outline: 3px solid rgba(182,255,103,0.06); outline-offset: 2px; }
+
+/* reduce animations for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  .term-wrap::before, .term-wrap::after, #scroll-bottom-btn { transition: none; animation: none; }
+  #terminal { scroll-behavior: auto; }
+}
+
+/* responsive adjustments */
+@media (max-width: 720px){
+  #terminal { max-height: 60vh; padding-right: 8px; border-radius: 8px; }
+  #scroll-bottom-btn { right: 10px; bottom: 12px; width: 34px; height: 34px; border-radius: 8px; }
+  #scroll-bottom-btn .badge { top: 5px; right: 5px; min-width:16px; height:16px; font-size:10px; }
+}
+
+/* utility: hide scrollbar entirely on platforms that don't support custom styling gracefully */
+@supports (-webkit-touch-callout: none) {
+  /* keep WebKit style; nothing to hide */
+}
+@supports not (display: grid) {
+  /* fallback no-op */
+}
+
+/* ---------- END block ---------- */
