@@ -91,7 +91,7 @@
 
 I have heard that flag_2 hides in shadows
 
-Are you root? no? then you can't find flag_3
+Are you root? no? then you can't find flag_3. (Note: flag_3 must be obtained before attempting flag_5)
 
 How about a little misc for flag_4:
 aHR0cHM6Ly9kcml2ZS5nb29nbGUuY29tL2RyaXZlL2ZvbGRlcnMvMUtVdHlDZkpZazgwdFZZYmRSNFNycS1nTW1Hd0s3TmNMP3VzcD1zaGFyZV9saW5r
