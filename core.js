@@ -468,28 +468,50 @@ async function handleSudoPasswordSubmission(entered){
   }
 
   /* ---------- Startup lines ---------- */
-  function formattedLastLogin(){
-    const d = new Date();
-    const weekday = d.toLocaleString(undefined, { weekday: 'short' });
-    const month = d.toLocaleString(undefined, { month: 'short' });
-    const day = d.getDate();
-    const hh = String(d.getHours()).padStart(2,'0');
-    const mm = String(d.getMinutes()).padStart(2,'0');
-    const ss = String(d.getSeconds()).padStart(2,'0');
-    return `${weekday} ${month} ${day} ${hh}:${mm}:${ss} on console`;
+function formattedLastLogin(){
+  const d = new Date();
+  const weekday = d.toLocaleString(undefined, { weekday: 'short' });
+  const month = d.toLocaleString(undefined, { month: 'short' });
+  const day = d.getDate();
+  const hh = String(d.getHours()).padStart(2,'0');
+  const mm = String(d.getMinutes()).padStart(2,'0');
+  const ss = String(d.getSeconds()).padStart(2,'0');
+  return `${weekday} ${month} ${day} ${hh}:${mm}:${ss} on console`;
+}
+
+/*
+ * Animated startup: type the last-login line and the boot line,
+ * then call createPrompt() so the prompt appears only after typing finishes.
+ * Uses your existing `typeLine(text, speed)` and `appendText()` helpers.
+ */
+async function addStartupLinesWithTyping(){
+  // If you want to clear old lines first, uncomment the next line:
+  // lines.innerHTML = '';
+
+  // Use formattedLastLogin() so the timestamp is dynamic.
+  const last = 'Last login: ' + formattedLastLogin();
+  const boot = 'Type help to get started. Can you find all 5 flags xD';
+
+  // type with a slightly humanized speed (uses your existing typeLine helper)
+  await typeLine(last, 16);
+  await new Promise(r => setTimeout(r, 380)); // short pause
+  await typeLine(boot, 16);
+  await new Promise(r => setTimeout(r, 180));
+
+  // Now show the prompt (reuse existing createPrompt implementation)
+  if(typeof createPrompt === 'function'){
+    createPrompt();
+  } else {
+    // fallback: if createPrompt ever missing, append a simple prompt row
+    appendText('r00tp4rv@mac ~ %');
   }
-  function addStartupLines(){
-    appendText('Last login: ' + formattedLastLogin());
-    appendText('Type help to get started. Can you find all 5 flags xD');
-  }
+}
 
-  // init
-  addStartupLines();
-  createPrompt();
-
-
-  // expose runCommand
-  window.runCommand = runCommand;
+// startup: run the animated boot sequence
+// (We use an async IIFE so any surrounding code that expected createPrompt to run here is satisfied)
+(async ()=>{
+  await addStartupLinesWithTyping();
+})();
 
   /* ----------------- Flag card bridge (restore updateFlagCard) ----------------- */
   window.updateFlagCard = function(ok){
