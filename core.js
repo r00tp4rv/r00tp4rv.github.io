@@ -490,7 +490,7 @@ async function addStartupLinesWithTyping(){
 
   // Use formattedLastLogin() so the timestamp is dynamic.
   const last = 'Last login: ' + formattedLastLogin();
-  const boot = 'Type help to get started. Can you find all 5 flags xD';
+  const boot = 'Type \`help` to see available commands. Start the hunt with \`cat chall.txt` and begin — can you uncover all 5 flags?';
 
   // type with a slightly humanized speed (uses your existing typeLine helper)
   await typeLine(last, 16);
