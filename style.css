@@ -24,6 +24,33 @@ a{color:var(--neon)}
 .logo-icon{display:inline-flex;align-items:center;color:var(--neon)}
 .logo-icon svg .shackle { transform-origin:center top; animation:openclose 2.2s infinite; }
 @keyframes openclose { 0%,100%{transform:rotate(0deg)} 50%{transform:rotate(-14deg)} }
+/* === Brand Hover Animation (matches nav animation) === */
+.brand {
+  transition: transform .18s cubic-bezier(.2,.9,.2,1), color .18s, filter .18s;
+  cursor: pointer;
+}
+.brand .brand-txt {
+  transition: color .2s ease, text-shadow .2s ease;
+  color: var(--neon);
+}
+.brand:hover,
+.brand:focus-within {
+  transform: translateY(-3px) scale(1.04);
+  color: var(--accent);
+  filter: drop-shadow(0 0 12px rgba(89,240,255,0.15));
+  text-shadow: 0 0 10px var(--accent);
+}
+.brand:hover .brand-txt,
+.brand:focus-within .brand-txt {
+  color: var(--accent);
+  text-shadow: 0 0 12px var(--accent);
+}
+.brand:hover .logo-icon,
+.brand:focus-within .logo-icon {
+  color: var(--accent);
+  transform: translateY(-2px) scale(1.08);
+  filter: drop-shadow(0 0 12px rgba(89,240,255,0.2));
+}
 .navlinks{display:flex;gap:20px;font-family:'Share Tech Mono';font-size:14px}
 
 /* layout */

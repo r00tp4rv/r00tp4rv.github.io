@@ -12,6 +12,8 @@
   --bg:#020305;
   --neon:#7CFF4C;
   --panel:#071015;
+  --accent:#59f0ff; /* cyan/blue hover accent */
+  --muted:#7ca39a;
 }
 *{box-sizing:border-box}
 html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#000);font-family:Inter,system-ui,Arial;color:#e6f7df;overflow:auto;-webkit-font-smoothing:antialiased}
@@ -34,6 +36,55 @@ html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#000)
 }
 .line-text{background:none;border:none;padding:0}
 
+/* Back-link — match prompt-block sizing and add hover glow (icon+text) */
+.back-link {
+  display:inline-flex;
+  gap:10px;
+  align-items:center;
+  text-decoration:none;
+  color:var(--neon);
+  /* match prompt-block sizing so alignment is consistent */
+  background:rgba(0,0,0,0.12);
+  padding:8px 12px;
+  border-radius:8px;
+  border:1px solid rgba(124,255,76,0.03);
+  font-family:'Share Tech Mono', monospace;
+  font-size:18px;
+  transition: transform .18s cubic-bezier(.2,.9,.2,1), color .18s, filter .18s, box-shadow .18s;
+  will-change: transform, color, filter;
+}
+
+/* small icon */
+.back-link .back-icon { width:18px; height:18px; display:inline-block; flex:0 0 18px; color:var(--neon); transition: transform .18s ease, filter .18s ease; }
+
+/* label */
+.back-link .back-label { font-size:18px; color:var(--neon); transition: color .18s ease, text-shadow .18s ease; }
+
+/* hover/focus: icon + text glow using accent color (visual only — doesn't change box sizing) */
+.back-link:hover,
+.back-link:focus {
+  transform: translateY(-3px) scale(1.04);
+  color: var(--accent);
+  text-shadow: 0 0 8px var(--accent);
+  filter: drop-shadow(0 0 10px rgba(89,240,255,0.12));
+  outline: none;
+}
+
+.back-link:hover .back-icon,
+.back-link:focus .back-icon {
+  color: var(--accent); /* updates SVG via currentColor */
+  transform: translateY(-2px) scale(1.06);
+  filter: drop-shadow(0 0 10px rgba(89,240,255,0.12));
+}
+
+/* keyboard: allow focus ring without shifting layout */
+.back-link:focus-visible { box-shadow: 0 0 0 4px rgba(89,240,255,0.04); }
+
+/* mobile degrade */
+@media (hover: none) {
+  .back-link { transform:none; filter:none; }
+}
+
 /* table */
 .card{margin-top:14px;background:linear-gradient(180deg,rgba(0,0,0,0.12),rgba(0,0,0,0.05));padding:10px;border-radius:10px;border:1px solid rgba(124,255,76,0.03)}
 .table-wrap{overflow:auto;margin-top:8px;border-radius:8px}
@@ -49,7 +100,7 @@ tbody td{padding:10px 12px;border-top:1px solid rgba(255,255,255,0.02);font-fami
 .stats-row{display:flex;gap:12px;margin-top:14px;flex-wrap:wrap}
 .stat{flex:1;min-width:130px;background:rgba(0,0,0,0.14);padding:12px;border-radius:8px;border:1px solid rgba(124,255,76,0.03);text-align:center}
 .stat .n{font-family:'Share Tech Mono';font-size:24px;color:var(--neon)}
-.stat .l{color:#7ca39a;font-size:12px;margin-top:6px}
+.stat .l{color:var(--muted);font-size:12px;margin-top:6px}
 
 /* responsive */
 @media (max-width:860px){
@@ -65,28 +116,36 @@ tbody td{padding:10px 12px;border-top:1px solid rgba(255,255,255,0.02);font-fami
 <canvas id="matrix"></canvas>
 <div class="wrap">
   <div class="shell">
-    <!-- back arrow -->
+    <!-- back arrow (single wrapper — fixed duplication) -->
     <div class="line-row" style="margin-bottom:12px">
-      <a href="index.html" class="prompt-block" style="text-decoration:none">← terminal</a>
+      <a href="index.html" class="back-link" title="Back to terminal" aria-label="Back to terminal">
+        <!-- back icon (svg uses currentColor) -->
+        <span class="back-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="18" height="18">
+            <path d="M15 18l-6-6 6-6"></path>
+          </svg>
+        </span>
+        <span class="back-label">cd ..</span>
+      </a>
     </div>
 
     <!-- $ r00tp4rv's CTF participation -->
     <div class="line-row">
       <div class="prompt-block">$</div>
-      <div class="line-text">$ r00tp4rv's CTF participation</div>
+      <div class="line-text">r00tp4rv's CTF participation</div>
     </div>
 
     <!-- $ ls -la -->
     <div class="line-row">
       <div class="prompt-block">$</div>
-      <div class="line-text">$ ls -la</div>
+      <div class="line-text">ls -la</div>
     </div>
 
     <!-- Table -->
     <div class="card">
       <div class="table-wrap">
         <table>
-          <thead><tr><th>Place</th><th>Event</th><th>CTF Points</th><th>Rating</th><th>Notes</th></tr></thead>
+          <thead><tr><th>Place</th><th>Event</th><th>CTF Points</th><th>Rating</th></tr></thead>
           <tbody id="ctf-body"></tbody>
         </table>
       </div>
@@ -121,6 +180,7 @@ const ctfRows=[
   {place:204,event:'Google CTF 2025',points:50,rating:1.111}
 ];
 
+
 /* render rows + stats */
 (function(){
   const tbody=document.getElementById('ctf-body');
@@ -130,7 +190,7 @@ const ctfRows=[
     const tr=document.createElement('tr');
     if(r.place<=20) tr.classList.add('top20');
     if(r.place<=10) top10++;
-    tr.innerHTML=`<td class="num">${r.place}</td><td>${r.event}</td><td class="num">${r.points}</td><td class="num">${r.rating}</td><td>${r.notes||'—'}</td>`;
+    tr.innerHTML=`<td class="num">${r.place}</td><td>${r.event}</td><td class="num">${r.points}</td><td class="num">${r.rating}</td>`;
     tbody.appendChild(tr);
   });
   document.getElementById('events-played').dataset.target=events;
