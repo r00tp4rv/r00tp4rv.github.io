@@ -1,0 +1,12 @@
+# r00tp4rv — robots.txt
+# ------------------------
+ 
+User-agent: *
+Disallow: /areyouroot/
+Disallow: /rootp4rv
+Disallow: /Another
+Disallow: /False
+Disallow: /Lead
+
+# ------------------------
+ 
