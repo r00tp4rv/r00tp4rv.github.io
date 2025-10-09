@@ -2,7 +2,7 @@
 # ------------------------
  
 User-agent: *
-Disallow: /areyouroot/
+Disallow: /areyouroot
 Disallow: /rootp4rv
 Disallow: /Another
 Disallow: /False
