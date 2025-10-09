@@ -1,6 +1,22 @@
 <!doctype html>
 <html lang="en">
 <head>
+<!-- Google Analytics (runs only on live site) -->
+<script>
+  if (location.hostname === "r00tp4rv.github.io") {
+    const s = document.createElement("script");
+    s.async = true;
+    s.src = "https://www.googletagmanager.com/gtag/js?id=G-PXQJ1KEJPR";
+    document.head.appendChild(s);
+
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){ dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', 'G-PXQJ1KEJPR');
+  } else {
+    console.log("[GA] Analytics disabled for local testing:", location.hostname);
+  }
+</script>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>r00tp4rv — CTF Participation</title>
