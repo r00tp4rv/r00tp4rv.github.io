@@ -1,64 +1,51 @@
 # r00tp4rv.github.io  
 ### Terminal of Truth™ 
 
-> Nothing here is broken.  
-> Some things are just not meant for you.
+> nothing here is broken  
+> you’re just looking in the wrong place
+> yes, fake flags are there
+> No, not everything that validates your ego will validate in the flag checker.
 
 This repo powers my personal site.  
 It also lies to you.
 
 ---
 
-## What you’re looking at
+```
+   ____  ____  ____  ____
+  |  _ \|  _ \|  _ \|  _ \
+  | |_) | |_) | |_) | |_) |
+  |  _ <|  __/|  __/|  _ <
+  |_| \_\_|   |_|   |_| \_\
+```
 
-- Build artifacts  
-- Decoys  
-- Old things  
-- Fake things  
-- Things that look important but aren’t  
-- Things that look useless but aren’t
+![build](https://img.shields.io/badge/build-unstable-red)
+![ctf](https://img.shields.io/badge/ctf-no_hints-black)
+![flags](https://img.shields.io/badge/flags-unknown-brightgreen)
 
-Pick wisely.
 
----
 
-## Common mistakes
+```bash
+$ whoami
+guest
 
-- “I’ll just read the source”
-- “robots.txt always tells the truth”
-- “This file name looks interesting”
-- “That has to be the flag”
-- “I’m done”
+$ ls
+core.obf.*  robots.*  runtime.*
 
-All wrong.
+$ cat flag.txt
+No such file or directory
+```
 
----
-
-## About flags
-
-Yes, they exist.  
-Yes, there are fakes.  
-Yes, they look real.
-
-No, not everything that validates your ego will validate in the flag checker.
-Cope accordingly.
-
----
-
-## Pro tip
+Yes, there are flags.  
+No, they’re not here.
 
 If GitHub was enough, this would be a writeup.
-
----
-
-## Final warning
 
 The repo is loud.  
 The site is honest.
 
-Choose your attack surface.
-
----
-
 Built by **r00tp4rv**  
 Play fair. Break assumptions.
+
+<!-- invisible decoy: r​0​0​t​p​4​r​v​{​f​4​k​3​_​f​l​4​g​} -->
+
