@@ -34,10 +34,10 @@ $ cat flag.txt
 No such file or directory
 ```
 
-Yes, there are flags.  
-No, they’re not here.
-yes, fake flags are there
-No, not everything that validates your ego will validate in the flag checker.
+- Yes, there are flags.  
+- No, they’re not here.
+- yes, fake flags are there
+- No, not everything that validates your ego will validate in the flag checker.
 <!-- invisible decoy: r​0​0​t​p​4​r​v​{​f​4​k​3​_​f​l​4​g​} -->
 Built by **r00tp4rv**  
 Play fair. Break assumptions.
