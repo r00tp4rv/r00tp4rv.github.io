@@ -19,7 +19,6 @@ It also lies to you.
 ```
 
 ![build](https://img.shields.io/badge/build-unstable-red)
-![ctf](https://img.shields.io/badge/ctf-no_hints-black)
 ![flags](https://img.shields.io/badge/flags-unknown-brightgreen)
 
 
