@@ -3,8 +3,7 @@
 
 > nothing here is broken  
 > you’re just looking in the wrong place
-> yes, fake flags are there
-> No, not everything that validates your ego will validate in the flag checker.
+
 
 This repo powers my personal site.  
 It also lies to you.
@@ -38,11 +37,8 @@ No such file or directory
 
 Yes, there are flags.  
 No, they’re not here.
-
-If GitHub was enough, this would be a writeup.
-
-The repo is loud.  
-The site is honest.
+yes, fake flags are there
+No, not everything that validates your ego will validate in the flag checker.
 
 Built by **r00tp4rv**  
 Play fair. Break assumptions.
