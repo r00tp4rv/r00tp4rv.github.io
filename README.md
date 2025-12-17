@@ -20,7 +20,7 @@ It also lies to you.
 ```
 
 ![build](https://img.shields.io/badge/build-unstable-red)
-![flags](https://img.shields.io/badge/flags-unknown-brightgreen)
+![flags](https://img.shields.io/badge/flags-known-brightgreen)
 
 
 
