@@ -5,9 +5,8 @@
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-PXQJ1KEJPR"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
+  function gtag(){dataLayer.push(arguments);}  
   gtag('js', new Date());
-
   gtag('config', 'G-PXQJ1KEJPR');
 </script>
 <meta charset="utf-8"/>
@@ -21,16 +20,95 @@
   --bg:#020305;
   --neon:#7CFF4C;
   --panel:#071015;
-  --accent:#59f0ff; /* cyan/blue hover accent */
+  --accent:#59f0ff;
   --muted:#7ca39a;
 }
 *{box-sizing:border-box}
 html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#000);font-family:Inter,system-ui,Arial;color:#e6f7df;overflow:auto;-webkit-font-smoothing:antialiased}
 #matrix{position:fixed;inset:0;z-index:0;opacity:0.12;pointer-events:none}
 .wrap{position:relative;z-index:1;max-width:1100px;margin:28px auto;padding:16px}
-.shell{background:linear-gradient(180deg, rgba(124,255,76,0.02), rgba(0,0,0,0.04));border:1px solid rgba(124,255,76,0.03);padding:18px;border-radius:12px;box-shadow:0 20px 60px rgba(0,0,0,0.6)}
 
-/* prompt style */
+.shell{
+  position:relative;
+  background:linear-gradient(180deg, rgba(124,255,76,0.02), rgba(0,0,0,0.04));
+  border:1px solid rgba(124,255,76,0.03);
+  padding:18px;
+  border-radius:12px;
+  box-shadow:0 20px 60px rgba(0,0,0,0.6)
+}
+
+/* top-right search */
+.top-search{
+  position:absolute;
+  top:16px;
+  right:16px;
+  display:flex;
+  flex-direction:column;
+  align-items:flex-end;
+  width:320px;
+  z-index:5;
+}
+
+.pill-search{
+  display:flex;
+  align-items:center;
+  background:linear-gradient(180deg, rgba(255,255,255,0.04), rgba(0,0,0,0.55));
+  border:1px solid rgba(124,255,76,0.18);
+  border-radius:999px;
+  padding:6px 6px 6px 14px;
+  box-shadow:inset 0 0 0 1px rgba(124,255,76,0.06), 0 8px 30px rgba(0,0,0,0.6);
+  backdrop-filter: blur(6px);
+}
+
+.pill-search input{
+  flex:1;
+  background:transparent;
+  border:none;
+  outline:none;
+  color:var(--neon);
+  font-family:'Share Tech Mono',monospace;
+  font-size:14px;
+}
+
+.pill-search input::placeholder{color:rgba(124,255,76,.45)}
+
+.search-btn{
+  background:rgba(0,0,0,0.45);
+  border:1px solid rgba(124,255,76,0.18);
+  border-radius:999px;
+  width:34px;
+  height:34px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:var(--neon);
+  cursor:pointer;
+  transition:background .18s ease, transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+}
+
+.search-btn:hover{
+  background:rgba(124,255,76,0.15);
+  border-color:rgba(124,255,76,0.45);
+  box-shadow:0 0 12px rgba(124,255,76,0.35);
+  transform:scale(1.06);
+}
+.search-btn:active{transform:scale(0.96)}
+.search-btn svg{stroke:currentColor}
+
+.search-results{
+  margin-top:6px;
+  background:rgba(0,0,0,0.35);
+  border:1px solid rgba(124,255,76,0.08);
+  border-radius:8px;
+  padding:6px 10px;
+  font-family:'Share Tech Mono',monospace;
+  font-size:13px;
+  color:var(--neon);
+  min-height:22px;
+}
+.search-results.dim{color:rgba(124,255,76,0.55)}
+
+/* terminal lines */
 .line-row{display:flex;align-items:center;gap:12px;margin:6px 0}
 .prompt-block,.line-text{
   font-family:'Share Tech Mono',monospace;
@@ -45,112 +123,67 @@ html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#000)
 }
 .line-text{background:none;border:none;padding:0}
 
-/* Back-link — match prompt-block sizing and add hover glow (icon+text) */
-.back-link {
-  display:inline-flex;
-  gap:10px;
-  align-items:center;
-  text-decoration:none;
-  color:var(--neon);
-  /* match prompt-block sizing so alignment is consistent */
-  background:rgba(0,0,0,0.12);
-  padding:8px 12px;
-  border-radius:8px;
+.back-link{
+  display:inline-flex;gap:10px;align-items:center;text-decoration:none;color:var(--neon);
+  background:rgba(0,0,0,0.12);padding:8px 12px;border-radius:8px;
   border:1px solid rgba(124,255,76,0.03);
-  font-family:'Share Tech Mono', monospace;
-  font-size:18px;
-  transition: transform .18s cubic-bezier(.2,.9,.2,1), color .18s, filter .18s, box-shadow .18s;
-  will-change: transform, color, filter;
+  font-family:'Share Tech Mono', monospace;font-size:18px;
+  transition: transform .18s cubic-bezier(.2,.9,.2,1), color .18s, filter .18s;
 }
-
-/* small icon */
-.back-link .back-icon { width:18px; height:18px; display:inline-block; flex:0 0 18px; color:var(--neon); transition: transform .18s ease, filter .18s ease; }
-
-/* label */
-.back-link .back-label { font-size:18px; color:var(--neon); transition: color .18s ease, text-shadow .18s ease; }
-
-/* hover/focus: icon + text glow using accent color (visual only — doesn't change box sizing) */
-.back-link:hover,
-.back-link:focus {
-  transform: translateY(-3px) scale(1.04);
-  color: var(--accent);
-  text-shadow: 0 0 8px var(--accent);
-  filter: drop-shadow(0 0 10px rgba(89,240,255,0.12));
-  outline: none;
-}
-
-.back-link:hover .back-icon,
-.back-link:focus .back-icon {
-  color: var(--accent); /* updates SVG via currentColor */
-  transform: translateY(-2px) scale(1.06);
-  filter: drop-shadow(0 0 10px rgba(89,240,255,0.12));
-}
-
-/* keyboard: allow focus ring without shifting layout */
-.back-link:focus-visible { box-shadow: 0 0 0 4px rgba(89,240,255,0.04); }
-
-/* mobile degrade */
-@media (hover: none) {
-  .back-link { transform:none; filter:none; }
-}
+.back-link:hover{transform:translateY(-3px) scale(1.04);color:var(--accent)}
 
 /* table */
 .card{margin-top:14px;background:linear-gradient(180deg,rgba(0,0,0,0.12),rgba(0,0,0,0.05));padding:10px;border-radius:10px;border:1px solid rgba(124,255,76,0.03)}
 .table-wrap{overflow:auto;margin-top:8px;border-radius:8px}
 table{width:100%;border-collapse:collapse;font-size:14px}
-thead th{font-family:'Share Tech Mono',monospace;text-align:left;padding:10px 12px;color:#bfeeb0;font-size:13px;white-space:nowrap}
+thead th{font-family:'Share Tech Mono',monospace;text-align:left;padding:10px 12px;color:#bfeeb0;font-size:13px}
 tbody tr{transition:all 160ms ease}
 tbody tr:hover{transform:translateY(-3px);background:linear-gradient(90deg, rgba(124,255,76,0.02), transparent)}
 tbody td{padding:10px 12px;border-top:1px solid rgba(255,255,255,0.02);font-family:'Share Tech Mono',monospace}
 .num{font-variant-numeric:tabular-nums}
 .top20{background:linear-gradient(90deg, rgba(124,255,76,0.06), rgba(0,0,0,0.03));border-left:3px solid rgba(124,255,76,0.22)}
 
-/* stats */
 .stats-row{display:flex;gap:12px;margin-top:14px;flex-wrap:wrap}
 .stat{flex:1;min-width:130px;background:rgba(0,0,0,0.14);padding:12px;border-radius:8px;border:1px solid rgba(124,255,76,0.03);text-align:center}
 .stat .n{font-family:'Share Tech Mono';font-size:24px;color:var(--neon)}
 .stat .l{color:var(--muted);font-size:12px;margin-top:6px}
-
-/* responsive */
-@media (max-width:860px){
-  thead{display:none}
-  tbody tr{display:block;margin-bottom:12px;padding:10px;border-radius:8px;background:linear-gradient(180deg,rgba(0,0,0,0.06),rgba(0,0,0,0.03))}
-  tbody td{display:flex;justify-content:space-between;padding:8px;border-top:0}
-  .prompt-block,.line-text{font-size:16px}
-  .stat .n{font-size:20px}
-}
 </style>
 </head>
 <body>
 <canvas id="matrix"></canvas>
 <div class="wrap">
   <div class="shell">
-    <!-- back arrow (single wrapper — fixed duplication) -->
-    <div class="line-row" style="margin-bottom:12px">
-      <a href="index.html" class="back-link" title="Back to terminal" aria-label="Back to terminal">
-        <!-- back icon (svg uses currentColor) -->
-        <span class="back-icon" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" width="18" height="18">
-            <path d="M15 18l-6-6 6-6"></path>
+
+    <!-- top right pill search -->
+    <div class="top-search">
+      <div class="pill-search">
+        <input id="xp-search" type="text" placeholder="search flag.txt" spellcheck="false" autocomplete="off" />
+        <button class="search-btn" aria-label="search">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none"
+               stroke="currentColor" stroke-width="2"
+               stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="7"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
           </svg>
-        </span>
-        <span class="back-label">cd ..</span>
-      </a>
+        </button>
+      </div>
+      <div id="search-results" class="search-results dim">no search performed</div>
     </div>
 
-    <!-- $ r00tp4rv's CTF participation -->
+    <div class="line-row" style="margin-bottom:12px">
+      <a href="index.html" class="back-link">cd ..</a>
+    </div>
+
     <div class="line-row">
       <div class="prompt-block">$</div>
       <div class="line-text">r00tp4rv's CTF participation</div>
     </div>
 
-    <!-- $ ls -la -->
     <div class="line-row">
       <div class="prompt-block">$</div>
       <div class="line-text">ls -la</div>
     </div>
 
-    <!-- Table -->
     <div class="card">
       <div class="table-wrap">
         <table>
@@ -158,26 +191,32 @@ tbody td{padding:10px 12px;border-top:1px solid rgba(255,255,255,0.02);font-fami
           <tbody id="ctf-body"></tbody>
         </table>
       </div>
-
       <div class="stats-row">
-        <div class="stat"><div class="n" id="events-played" data-target="0">0</div><div class="l">Events played</div></div>
-        <div class="stat"><div class="n" id="top10" data-target="0">0</div><div class="l">Top-10 finishes</div></div>
+        <div class="stat"><div class="n" id="events-played">0</div><div class="l">Events played</div></div>
+        <div class="stat"><div class="n" id="top10">0</div><div class="l">Top-10 finishes</div></div>
       </div>
     </div>
   </div>
 </div>
 
 <script>
-/* matrix background */
+/* matrix bg */
 (function(){
   const c=document.getElementById('matrix'),ctx=c.getContext('2d');
-  let W,H,cols,y;function fit(){W=c.width=innerWidth;H=c.height=innerHeight;cols=Math.max(8,Math.floor(W/20));y=Array(cols).fill(0);}addEventListener('resize',fit);fit();
-  const chars='abcdefghijklmnopqrstuvwxyz0123456789@#$%&*()<>/\\\\|';
-  function frame(){ctx.fillStyle='rgba(0,0,0,0.06)';ctx.fillRect(0,0,W,H);ctx.fillStyle='rgba(124,255,76,0.85)';ctx.font='14px \"Share Tech Mono\"';for(let i=0;i<cols;i++){const ch=chars.charAt(Math.floor(Math.random()*chars.length));ctx.fillText(ch,i*20,y[i]*16);if(y[i]*16>H&&Math.random()>0.98)y[i]=0;y[i]++;}requestAnimationFrame(frame);}requestAnimationFrame(frame);
+  let W,H,cols,y;
+  function fit(){W=c.width=innerWidth;H=c.height=innerHeight;cols=Math.max(8,Math.floor(W/20));y=Array(cols).fill(0)}
+  addEventListener('resize',fit);fit();
+  const chars='abcdefghijklmnopqrstuvwxyz0123456789@#$%';
+  (function frame(){
+    ctx.fillStyle='rgba(0,0,0,0.06)';ctx.fillRect(0,0,W,H);
+    ctx.fillStyle='rgba(124,255,76,0.85)';ctx.font='14px Share Tech Mono';
+    for(let i=0;i<cols;i++){const ch=chars[Math.floor(Math.random()*chars.length)];ctx.fillText(ch,i*20,y[i]*16);if(y[i]*16>H&&Math.random()>0.98)y[i]=0;y[i]++}
+    requestAnimationFrame(frame);
+  })();
 })();
 
-/* CTF rows */
-const ctfRows=[
+/* table data */
+const rows=[
   {place:1,event:'HackornCTF 2025 Quals',points:2350,rating:0},
   {place:2,event:'Cybercom CTF 2025 Quals',points:4582,rating:0},
   {place:6,event:'AISS Hackathon 2025',points:5300,rating:0},
@@ -189,24 +228,87 @@ const ctfRows=[
   {place:14,event:'No Hack No CTF 2025',points:4847,rating:11.648},
   {place:204,event:'Google CTF 2025',points:50,rating:1.111}
 ];
+(function(){const b=document.getElementById('ctf-body');let e=0,t=0;rows.forEach(r=>{e++;if(r.place<=10)t++;const tr=document.createElement('tr');if(r.place<=20)tr.classList.add('top20');tr.innerHTML=`<td class=\"num\">${r.place}</td><td>${r.event}</td><td class=\"num\">${r.points}</td><td class=\"num\">${r.rating}</td>`;b.appendChild(tr)});document.getElementById('events-played').textContent=e;document.getElementById('top10').textContent=t})();
 
-
-/* render rows + stats */
+/* search logic – privilege escalation flow */
 (function(){
-  const tbody=document.getElementById('ctf-body');
-  let events=0,top10=0;
-  ctfRows.forEach(r=>{
-    events++;
-    const tr=document.createElement('tr');
-    if(r.place<=20) tr.classList.add('top20');
-    if(r.place<=10) top10++;
-    tr.innerHTML=`<td class="num">${r.place}</td><td>${r.event}</td><td class="num">${r.points}</td><td class="num">${r.rating}</td>`;
-    tbody.appendChild(tr);
-  });
-  document.getElementById('events-played').dataset.target=events;
-  document.getElementById('top10').dataset.target=top10;
-  function animate(el,target){let s=null;function step(ts){if(!s)s=ts;const p=Math.min((ts-s)/800,1);el.textContent=Math.floor(p*target);if(p<1)requestAnimationFrame(step);else el.textContent=target;}requestAnimationFrame(step);}
-  [document.getElementById('events-played'),document.getElementById('top10')].forEach(el=>animate(el,Number(el.dataset.target)));
+  const i=document.getElementById('xp-search');
+  const r=document.getElementById('search-results');
+  const shell=document.querySelector('.shell');
+  const btn=document.querySelector('.search-btn');
+  let isRoot=false;
+
+  if(!i||!r||!btn||!shell) return;
+
+  function flash(){ document.body.style.filter='hue-rotate(18deg)'; setTimeout(()=>document.body.style.filter='',500); }
+  function shake(){ shell.style.transform='translateX(-4px)'; setTimeout(()=>shell.style.transform='',120); }
+  function becomeRoot(){
+    isRoot=true;
+    document.documentElement.style.setProperty('--neon','#ff4d4d');
+    btn.style.color='#ff4d4d';
+    shell.style.boxShadow='0 0 40px rgba(255,77,77,0.25), 0 20px 60px rgba(0,0,0,0.6)';
+    r.textContent='root shell spawned (#)';
+  }
+
+ function handleSearch(){
+  const q = i.value.trim().toLowerCase();
+  if(!q){ 
+    r.textContent='empty query'; 
+    r.classList.add('dim'); 
+    return; 
+  }
+  r.classList.remove('dim');
+
+  if(!isRoot){
+
+    if(q === 'flag.txt'){
+      r.textContent='drwxr-xr-x r00tp4rv admin flag.txt';
+      shake();
+    } 
+    else if(q === 'cat flag.txt'){
+      r.textContent='Permission denied — requires elevated privileges';
+      shake();
+    } 
+    else if(q === 'sudo su'){
+      r.textContent='Users may execute only what is allowed. Try listing your sudo permissions.';
+      flash();
+    } 
+    else if(q === 'sudo cat flag.txt'){
+      r.textContent='Users may execute only what is allowed. Try listing your sudo permissions.';
+      flash();
+    } 
+    else if(q === 'sudo flag.txt'){
+      r.textContent='Users may execute only what is allowed. Try listing your sudo permissions.';
+      flash();
+    } 
+    else if(q === 'sudo -l'){
+      r.textContent='User may run the following commands on server:\n(root) NOPASSWD: /usr/bin/find';
+      flash();
+    } 
+    else if(q.includes('find') && q.includes('/bin/sh')){
+      becomeRoot();
+    } 
+    else {
+      r.textContent='no matches';
+      r.classList.add('dim');
+    }
+
+  } 
+  else {
+
+    if(q.includes('flag.txt')){
+      r.textContent='r00tp4rv{f1nd_pr1v_3sc_v1a_sud0}';
+      flash();
+    } 
+    else {
+      r.textContent='#';
+    }
+
+  }
+
+  i.value='';
+}  i.addEventListener('keydown',e=>{ if(e.key==='Enter') handleSearch(); });
+  btn.addEventListener('click', handleSearch);
 })();
 </script>
 </body>
