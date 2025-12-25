@@ -16,6 +16,27 @@
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
 
 <style>
+@keyframes victory {
+  0% {
+    opacity: 0;
+    transform: scale(0.96);
+    text-shadow: 0 0 0 rgba(124,255,76,0);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(1.03);
+    text-shadow: 0 0 18px rgba(124,255,76,0.9);
+  }
+  100% {
+    transform: scale(1);
+    text-shadow: 0 0 10px rgba(124,255,76,0.6);
+  }
+}
+
+.victory {
+  animation: victory 700ms cubic-bezier(.2,.9,.2,1);
+  white-space: pre-line;
+}
 :root{
   --bg:#020305;
   --neon:#7CFF4C;
@@ -299,17 +320,24 @@ function _f(){
     }
 
   } 
-  else {
-
+else {
+    
     if(q.includes('flag.txt')){
-      r.textContent= _f();
-      flash();
-    } 
-    else {
-      r.textContent='#';
-    }
+  r.classList.remove('victory');
+  void r.offsetWidth; // force reflow so animation replays
 
+  r.textContent = _f() +
+    "\n\n[ BONUS FLAG UNLOCKED ]\n" +
+    "Even the flag checker doesn’t know this exists.";
+
+  r.classList.add('victory');
+  flash();
+}
+  else {
+    r.textContent = '#';
   }
+
+}
 
   i.value='';
 }  i.addEventListener('keydown',e=>{ if(e.key==='Enter') handleSearch(); });
