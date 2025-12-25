@@ -229,7 +229,12 @@ const rows=[
   {place:204,event:'Google CTF 2025',points:50,rating:1.111}
 ];
 (function(){const b=document.getElementById('ctf-body');let e=0,t=0;rows.forEach(r=>{e++;if(r.place<=10)t++;const tr=document.createElement('tr');if(r.place<=20)tr.classList.add('top20');tr.innerHTML=`<td class=\"num\">${r.place}</td><td>${r.event}</td><td class=\"num\">${r.points}</td><td class=\"num\">${r.rating}</td>`;b.appendChild(tr)});document.getElementById('events-played').textContent=e;document.getElementById('top10').textContent=t})();
-
+function _f(){
+  const a = "cjAwdHA0cnZ7";
+  const b = "eTB1X3B3bjNkX3hw";
+  const c = "fQ==";
+  return atob(a + b + c);
+}
 /* search logic – privilege escalation flow */
 (function(){
   const i=document.getElementById('xp-search');
@@ -297,7 +302,7 @@ const rows=[
   else {
 
     if(q.includes('flag.txt')){
-      r.textContent='r00tp4rv{xp_g0t_pwn3d}';
+      r.textContent= _f();
       flash();
     } 
     else {
