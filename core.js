@@ -225,6 +225,116 @@ OSINT final flag_5: aHR0cHM6Ly9kcml2ZS5nb29nbGUuY29tL2RyaXZlL2ZvbGRlcnMvMXN3Tldn
     return true;
   }
 
+  /* ---------- base64 + a minimal pipeline ---------- */
+
+  /* Strip one layer of surrounding quotes, including the curly quotes that
+     iOS substitutes for straight ones. Without this, pasting a quoted blob
+     from a phone silently fails. */
+  function unquote(s){
+    s = (s || '').trim();
+    const pairs = [['"','"'], ["'","'"], ['\u201C','\u201D'], ['\u2018','\u2019']];
+    // Loop: a value pasted from a phone can end up quoted more than once.
+    for(let guard = 0; guard < 4; guard++){
+      let stripped = false;
+      for(const [open, close] of pairs){
+        if(s.length >= 2 && s.startsWith(open) && s.endsWith(close)){
+          s = s.slice(1, -1).trim();
+          stripped = true;
+          break;
+        }
+      }
+      if(!stripped) break;
+    }
+    return s;
+  }
+
+  function b64Decode(str){
+    try{
+      // Tolerate whitespace and newlines inside the blob, and missing padding.
+      let clean = String(str).replace(/[\s"'\u201C\u201D\u2018\u2019]+/g, '');
+      if(!clean) return null;
+      if(!/^[A-Za-z0-9+/=_-]+$/.test(clean)) return null;
+      clean = clean.replace(/-/g, '+').replace(/_/g, '/');   // url-safe base64
+      while(clean.length % 4) clean += '=';
+      const bin = atob(clean);
+      const bytes = Uint8Array.from(bin, function(c){ return c.charCodeAt(0); });
+      return new TextDecoder('utf-8', { fatal: false }).decode(bytes);
+    }catch(e){ return null; }
+  }
+
+  function b64Encode(str){
+    try{
+      const bytes = new TextEncoder().encode(String(str));
+      let bin = '';
+      bytes.forEach(function(b){ bin += String.fromCharCode(b); });
+      return btoa(bin);
+    }catch(e){ return null; }
+  }
+
+  function isBase64Cmd(name){ return name === 'base64' || name === 'b64'; }
+  function wantsDecode(args){
+    return args.indexOf('-d') !== -1 || args.indexOf('-D') !== -1 ||
+           args.indexOf('--decode') !== -1;
+  }
+
+  /* Produce the text a left hand pipeline stage emits. Returns null when the
+     stage cannot run, so the caller can print a shell-like error. */
+  async function stageOutput(stage){
+    const text = stage.trim();
+    const parts = text.split(/\s+/);
+    const base = (parts[0] || '').toLowerCase();
+
+    if(base === 'echo'){
+      return unquote(text.slice(text.indexOf('echo') + 4));
+    }
+
+    if(base === 'cat'){
+      const target = parts.slice(1).join(' ');
+      const res = resolvePath(target);
+      if(!res || res.node.type !== 'file' || !checkAccess(res.node)) return null;
+      if(res.node.vault){
+        return Engine ? await Engine.readVault(res.node.vault) : null;
+      }
+      return res.node.content == null ? '' : res.node.content;
+    }
+
+    if(isBase64Cmd(base)){
+      const args = parts.slice(1);
+      const rest = unquote(args.filter(function(a){
+        return a !== '-d' && a !== '-D' && a !== '--decode';
+      }).join(' '));
+      if(!rest) return null;
+      return wantsDecode(args) ? b64Decode(rest) : b64Encode(rest);
+    }
+
+    return null;
+  }
+
+  async function runPipeline(cmdline){
+    const stages = cmdline.split('|').map(function(s){ return s.trim(); }).filter(Boolean);
+    if(stages.length !== 2){
+      await typeLine('Only simple two stage pipelines are supported, for example: echo "..." | base64 -d');
+      return;
+    }
+
+    const input = await stageOutput(stages[0]);
+    if(input === null){
+      await typeLine((stages[0].split(/\s+/)[0] || 'pipeline') + ': cannot read input');
+      return;
+    }
+
+    const parts = stages[1].split(/\s+/);
+    const base = (parts[0] || '').toLowerCase();
+    if(!isBase64Cmd(base)){
+      await typeLine(base + ': not supported on the right of a pipe (try base64 -d)');
+      return;
+    }
+
+    const out = wantsDecode(parts.slice(1)) ? b64Decode(input) : b64Encode(input);
+    if(out === null){ await typeLine('base64: invalid input'); return; }
+    await typeLine(out);
+  }
+
   /* ---------- command execution ---------- */
   async function runCommand(cmdline){
     if(awaitingSudoPassword){
@@ -234,12 +344,18 @@ OSINT final flag_5: aHR0cHM6Ly9kcml2ZS5nb29nbGUuY29tL2RyaXZlL2ZvbGRlcnMvMXN3Tldn
 
     const cmd = (cmdline||'').trim();
     if(!cmd) return;
+
+    // A pipe means the whole line is a pipeline, so handle it before the
+    // normal single command dispatch below.
+    if(cmd.indexOf('|') !== -1){ await runPipeline(cmd); return; }
+
     const parts = cmd.split(/\s+/);
     const base = parts[0].toLowerCase();
 
         // Caller (the Enter handler) creates the prompt once we return.
     if(base === 'clear'){ lines.innerHTML = ''; await printStartupLines(); return; }
-    if(base === 'help'){ await typeLine('available: whoami | moreinfo | flag <value> | progress | ls | ls -la | cat <file> | pwd | cd <dir> | sudo su | exit | help | clear'); await typeLine('Tip: press Tab to autocomplete commands & filenames.'); return; }
+    if(base === 'help'){ await typeLine('available: whoami | moreinfo | flag <value> | progress | ls | ls -la | cat <file> | echo <text> | base64 [-d] <text> | pwd | cd <dir> | sudo su | exit | help | clear');
+      await typeLine('Pipes work too: echo "<text>" | base64 -d   and   cat <file> | base64 -d'); await typeLine('Tip: press Tab to autocomplete commands & filenames.'); return; }
     if(base === 'exit'){
       if(isRoot){
         isRoot = false;
@@ -273,6 +389,27 @@ OSINT final flag_5: aHR0cHM6Ly9kcml2ZS5nb29nbGUuY29tL2RyaXZlL2ZvbGRlcnMvMXN3Tldn
       return;
     }
 
+    if(base === 'echo'){
+      await typeLine(unquote(cmd.slice(4)));
+      return;
+    }
+
+    if(isBase64Cmd(base)){
+      const args = parts.slice(1);
+      const rest = unquote(args.filter(function(a){
+        return a !== '-d' && a !== '-D' && a !== '--decode';
+      }).join(' '));
+      if(!rest){
+        await typeLine('Usage: base64 [-d] <text>');
+        await typeLine('   or: echo "<text>" | base64 -d');
+        return;
+      }
+      const out = wantsDecode(args) ? b64Decode(rest) : b64Encode(rest);
+      if(out === null){ await typeLine('base64: invalid input'); return; }
+      await typeLine(out);
+      return;
+    }
+
     if(base === 'pwd'){ await typeLine(cwd); return; }
 
     if(base === 'cd'){
@@ -288,7 +425,9 @@ OSINT final flag_5: aHR0cHM6Ly9kcml2ZS5nb29nbGUuY29tL2RyaXZlL2ZvbGRlcnMvMXN3Tldn
     if(base === 'ls'){
       const arg1 = parts[1] || '';
       const long = parts.includes('-l') || parts.includes('-la') || arg1 === '-la';
-      const target = (parts.find(p => p && !p.startsWith('-') && p !== 'ls') || '.');
+      // Exclude argv[0] by position, not by comparing it to the literal
+      // 'ls'. The old check meant `LS` was parsed as `ls LS`.
+      const target = (parts.slice(1).find(p => p && !p.startsWith('-')) || '.');
       const res = resolvePath(target);
       if(!res){ await typeLine('ls: cannot access ' + target + ': No such file or directory'); return; }
       if(!checkAccess(res.node)){ await typeLine('ls: cannot open directory ' + target + ': Permission denied'); return; }
@@ -347,6 +486,8 @@ OSINT final flag_5: aHR0cHM6Ly9kcml2ZS5nb29nbGUuY29tL2RyaXZlL2ZvbGRlcnMvMXN3Tldn
     const label = document.createElement('span'); label.className = 'user'; label.textContent = 'Password:';
     const input = document.createElement('span'); input.className = 'cmd-line empty pwd'; input.setAttribute('contenteditable','true');
     input.setAttribute('spellcheck','false'); input.setAttribute('role','textbox');
+    input.setAttribute('autocapitalize','none');
+    input.setAttribute('autocorrect','off');
     input.setAttribute('aria-label','sudo password');
     input.dataset.real = '';
     row.appendChild(label); row.appendChild(input);
@@ -465,6 +606,12 @@ OSINT final flag_5: aHR0cHM6Ly9kcml2ZS5nb29nbGUuY29tL2RyaXZlL2ZvbGRlcnMvMXN3Tldn
     const user = document.createElement('span'); user.className = 'user';
     user.textContent = (isRoot ? 'root' : 'r00tp4rv') + (isRoot ? '@mac #' : '@mac ~ %');
     const input = document.createElement('span'); input.className = 'cmd-line empty'; input.setAttribute('contenteditable','true'); input.setAttribute('spellcheck','false'); input.setAttribute('role','textbox');
+    // Phone keyboards otherwise capitalise the first letter of every command
+    // and 'helpfully' autocorrect base64 blobs into prose.
+    input.setAttribute('autocapitalize','none');
+    input.setAttribute('autocorrect','off');
+    input.setAttribute('autocomplete','off');
+    input.setAttribute('aria-label','terminal command input');
 
     row.appendChild(user); row.appendChild(input); lines.appendChild(row);
     terminal.scrollTop = terminal.scrollHeight;
@@ -481,7 +628,7 @@ OSINT final flag_5: aHR0cHM6Ly9kcml2ZS5nb29nbGUuY29tL2RyaXZlL2ZvbGRlcnMvMXN3Tldn
       const { token, all } = currentToken();
       const cmdParts = all.trim().split(/\s+/);
       if(cmdParts.length === 1 && !all.endsWith(' ')){
-        const cmds = ['whoami','moreinfo','flag','progress','ls','pwd','cd','cat','sudo','exit','help','clear'];
+        const cmds = ['whoami','moreinfo','flag','progress','ls','pwd','cd','cat','echo','base64','sudo','exit','help','clear'];
         const matches = cmds.filter(c => c.startsWith(token));
         if(matches.length === 1){ input.textContent = matches[0] + ' '; placeCaretAtEnd(input); updateEmpty(); return; }
         else if(matches.length > 1){ appendText(matches.join('  ')); return; } else return;
@@ -491,9 +638,14 @@ OSINT final flag_5: aHR0cHM6Ly9kcml2ZS5nb29nbGUuY29tL2RyaXZlL2ZvbGRlcnMvMXN3Tldn
       const pathFragment = token;
       let dirPath = cwd;
       let prefix = pathFragment;
+      // Keep the directory part of the token so it can be put back on the
+      // line. Without this, completing `cat /etc/pass` replaced the whole
+      // token with the bare filename and produced `cat passwd`.
+      let dirPrefix = '';
       if(pathFragment.includes('/')){
         const idx = pathFragment.lastIndexOf('/');
         const dirPart = pathFragment.slice(0, idx);
+        dirPrefix = pathFragment.slice(0, idx + 1);
         prefix = pathFragment.slice(idx+1);
         const resolved = resolvePath(dirPart || '.');
         if(!resolved) { appendText('(no completion)'); return; }
@@ -506,7 +658,7 @@ OSINT final flag_5: aHR0cHM6Ly9kcml2ZS5nb29nbGUuY29tL2RyaXZlL2ZvbGRlcnMvMXN3Tldn
       if(matches.length === 0){ appendText('(no completion)'); return; }
       if(matches.length === 1){
         let before = all.slice(0, all.length - token.length);
-        input.textContent = before + matches[0];
+        input.textContent = before + dirPrefix + matches[0];
         placeCaretAtEnd(input); updateEmpty();
       } else {
         appendText(matches.join('  '));
@@ -578,6 +730,67 @@ OSINT final flag_5: aHR0cHM6Ly9kcml2ZS5nb29nbGUuY29tL2RyaXZlL2ZvbGRlcnMvMXN3Tldn
       const sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(range);
     }
   }
+
+  /* ---------- Real terminal affordances ---------- */
+  (function terminalAffordances(){
+    if(!terminal) return;
+
+    function activePrompt(){
+      return lines.querySelector('.prompt-row .cmd-line[contenteditable="true"]');
+    }
+
+    /*
+     * Click anywhere in the terminal and you are typing, exactly like a real
+     * one. Guarded so that selecting text to copy a flag does not immediately
+     * yank the caret away.
+     */
+    terminal.addEventListener('click', function(e){
+      const sel = window.getSelection && window.getSelection();
+      if(sel && String(sel).length > 0) return;          // user is selecting
+      if(e.target && e.target.closest && e.target.closest('a')) return;
+      const p = activePrompt();
+      if(p && document.activeElement !== p) placeCaretAtEnd(p);
+    });
+
+    /* Control keys. Only ctrlKey: on macOS the meta chords belong to Safari
+       and Chrome, and stealing Cmd+L from the address bar would be rude. */
+    terminal.addEventListener('keydown', function(e){
+      if(!e.ctrlKey || e.altKey || e.metaKey) return;
+      const p = activePrompt();
+      const key = (e.key || '').toLowerCase();
+
+      if(key === 'l'){                                    // clear the screen
+        e.preventDefault();
+        if(awaitingSudoPassword) return;
+        lines.innerHTML = '';
+        (async function(){ await printStartupLines(); createPrompt(); })();
+        return;
+      }
+
+      if(key === 'u'){                                    // kill the line
+        e.preventDefault();
+        if(!p) return;
+        p.textContent = '';
+        p.classList.add('empty');
+        placeCaretAtEnd(p);
+        return;
+      }
+
+      if(key === 'c'){                                    // abandon the line
+        // Let a real copy through when there is a selection.
+        const sel = window.getSelection && window.getSelection();
+        if(sel && String(sel).length > 0) return;
+        e.preventDefault();
+        if(awaitingSudoPassword) return;
+        if(!p) return;
+        const text = p.textContent || '';
+        p.removeAttribute('contenteditable');
+        p.textContent = text + '^C';
+        createPrompt();
+        return;
+      }
+    });
+  })();
 
   /* ---------- Startup lines ---------- */
 function formattedLastLogin(){
@@ -870,6 +1083,11 @@ async function printStartupLines(){
 
       case 'decoy':
         return { kind:res.kind, html: MSG.bad('haha, nice try!') };
+
+      case 'case':
+        // Right flag, wrong capitalisation. Saying so beats a flat "incorrect"
+        // when the only problem is a phone keyboard.
+        return { kind:res.kind, html: MSG.warn('So close. Check your capitalisation.') };
 
       default:
         return { kind:'wrong', html: MSG.bad('✖ INCORRECT. Try again.') };

@@ -31,7 +31,8 @@
 <meta name="twitter:image" content="https://r00tp4rv.github.io/assets/r00tp4rv-logo.png" />
 
 <!-- Same policy as index.html. 'unsafe-inline' on script-src is required by
-     the inline gtag block and this page's own inline script. -->
+     the inline gtag block and this page's own inline script.
+     frame-ancestors omitted: it is ignored in a meta tag. -->
 <meta http-equiv="Content-Security-Policy" content="
   default-src 'self';
   script-src 'self' 'unsafe-inline' https://www.googletagmanager.com;
@@ -41,7 +42,6 @@
   connect-src 'self' https://www.google-analytics.com https://region1.google-analytics.com https://www.googletagmanager.com;
   base-uri 'none';
   form-action 'none';
-  frame-ancestors 'none';
   object-src 'none'
 " />
 <meta name="referrer" content="strict-origin-when-cross-origin" />

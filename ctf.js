@@ -43,30 +43,72 @@
   /* ---------------- generated constants, do not hand edit ---------------- */
 
   const CTF = {
-    "hashSalt": "r00tp4rv|ctf|v2|",
-    "kdf": {
-      "salt": "rg2YaXUdsfjx6oIn5VuTpA==",
-      "iterations": 200000,
-      "hash": "SHA-256"
-    },
-    "slots": [
-      { "id": "f1", "label": "flag_1", "hint": "encoding", "digest": "12302482457478c34e24f4cca7a43bb175d5617b8c083da171d58f65fd8220dd" },
-      { "id": "f2", "label": "flag_2", "hint": "shadows",  "digest": "2ada206054a9981c0439e9dc0af53bb1f636574f1c30c762b6122c54305aa6a2" },
-      { "id": "f3", "label": "flag_3", "hint": "privesc",  "digest": "88dee7b40cdbbd5f7102c68dc79bf910c9c6bff7b85105c14c5d94902c552ce2" },
-      { "id": "f4", "label": "flag_4", "hint": "stego",    "digest": "d5ed11c7fda2d79568f4f3f49801a795940e00768eb3488607e9f7d9d4ad5f7d" },
-      { "id": "f5", "label": "flag_5", "hint": "osint",    "digest": "d7afeb44f8c91c94026f7fdff39bfc714edceb9e13cdd378279218f8c10f6a2d" }
-    ],
-    "bonus": { "id": "bonus", "label": "bonus", "hint": "xp", "digest": "7930b79c84c8e933002b1f051dc255c9254f2c3cb3f06312ef6d10f1503a0ff1" },
-    "decoys": [
-      "a52eb5fa3aac37a7c2109d08c68d60261bd242aebf92c0b2935d62a5557414ec",
-      "81e97416cbd4036085afff473c138161f281380a0e966b99f1008173fa24f2c3",
-      "483fcbc1393dcacea7ae28be93e849769debffddc52e03a16a8e6089663c38fb",
-      "2051f873fed08baf67f9b2e22fc0f2ee603c8a4a02a507bf88b0ca3a05df7522"
-    ],
-    "vault": {
-      "root_txt":     { "iv": "E5UZr6CPzL3mlpj/", "ct": "lTt/KVNDBenxlWW3gsux4ZEjvGfirtrQXRzGy1UM83IAryyctJlg4g==" },
-      "final_reveal": { "iv": "0iRizQ04ELYZc2xI", "ct": "7pBoNbEJdae08NmhrbB/RJRytMzuMeIB4wIumbzronBr7aAuoXtM1z++RNo=" }
-    }
+      "hashSalt": "r00tp4rv|ctf|v2|",
+      "kdf": {
+          "salt": "A6CJkA7UOebMJXwSSmgnXQ==",
+          "iterations": 200000,
+          "hash": "SHA-256"
+      },
+      "slots": [
+          {
+              "id": "f1",
+              "label": "flag_1",
+              "hint": "encoding",
+              "digest": "12302482457478c34e24f4cca7a43bb175d5617b8c083da171d58f65fd8220dd",
+              "digestLower": "12302482457478c34e24f4cca7a43bb175d5617b8c083da171d58f65fd8220dd"
+          },
+          {
+              "id": "f2",
+              "label": "flag_2",
+              "hint": "shadows",
+              "digest": "2ada206054a9981c0439e9dc0af53bb1f636574f1c30c762b6122c54305aa6a2",
+              "digestLower": "6250d8bca1ebf4ef4535883718663af9e2d492a3f03810ccbf9f160420c61dc4"
+          },
+          {
+              "id": "f3",
+              "label": "flag_3",
+              "hint": "privesc",
+              "digest": "88dee7b40cdbbd5f7102c68dc79bf910c9c6bff7b85105c14c5d94902c552ce2",
+              "digestLower": "8e45c1c52c80d276ef3b0a467c1554823ca7b2cd1ce2e0c9ec82031ea447eb63"
+          },
+          {
+              "id": "f4",
+              "label": "flag_4",
+              "hint": "stego",
+              "digest": "d5ed11c7fda2d79568f4f3f49801a795940e00768eb3488607e9f7d9d4ad5f7d",
+              "digestLower": "d5ed11c7fda2d79568f4f3f49801a795940e00768eb3488607e9f7d9d4ad5f7d"
+          },
+          {
+              "id": "f5",
+              "label": "flag_5",
+              "hint": "osint",
+              "digest": "d7afeb44f8c91c94026f7fdff39bfc714edceb9e13cdd378279218f8c10f6a2d",
+              "digestLower": "d7afeb44f8c91c94026f7fdff39bfc714edceb9e13cdd378279218f8c10f6a2d"
+          }
+      ],
+      "bonus": {
+          "id": "bonus",
+          "label": "bonus",
+          "hint": "xp",
+          "digest": "7930b79c84c8e933002b1f051dc255c9254f2c3cb3f06312ef6d10f1503a0ff1",
+          "digestLower": "7930b79c84c8e933002b1f051dc255c9254f2c3cb3f06312ef6d10f1503a0ff1"
+      },
+      "decoys": [
+          "a52eb5fa3aac37a7c2109d08c68d60261bd242aebf92c0b2935d62a5557414ec",
+          "81e97416cbd4036085afff473c138161f281380a0e966b99f1008173fa24f2c3",
+          "483fcbc1393dcacea7ae28be93e849769debffddc52e03a16a8e6089663c38fb",
+          "2051f873fed08baf67f9b2e22fc0f2ee603c8a4a02a507bf88b0ca3a05df7522"
+      ],
+      "vault": {
+          "root_txt": {
+              "iv": "UtaLoCgcreDvlYnP",
+              "ct": "5OmIHQS0YKmBGsQp0ggBWoD7NPweJzKAS5eioTlWOCCJbB+U2tVE0w=="
+          },
+          "final_reveal": {
+              "iv": "TXStk2SKgUfW/pB2",
+              "ct": "A6mFYOmY616z9tpO5FaBb9fcx4SyYrcOg077Sf9CS6LlLuhYx0AJgNMehQM="
+          }
+      }
   };
 
   /* ---------------------------- crypto helpers --------------------------- */
@@ -96,7 +138,17 @@
     s = s.replace(/[\u200B-\u200D\uFEFF]/g, '');   // zero width space, ZWNJ, ZWJ, BOM
     s = s.replace(/[\x00-\x1F\x7F]/g, '');          // control characters
     s = s.replace(/\u00A0/g, ' ');            // non breaking space
-    return s.replace(/^\s+|\s+$/g, '');
+    s = s.replace(/^\s+|\s+$/g, '');
+
+    /*
+     * iOS and Android capitalise the first letter of a field by default,
+     * turning r00tp4rv{...} into R00tp4rv{...} and failing every flag typed
+     * on a phone. Forgive the prefix, and only the prefix: the body stays
+     * case sensitive because R1t1 and Sh4d0ws are part of the answer.
+     */
+    s = s.replace(/^r00tp4rv(?=\s*\{)/i, 'r00tp4rv');
+
+    return s;
   }
 
   async function sha256Hex(str) {
@@ -292,6 +344,17 @@
     }
 
     if (CTF.decoys.indexOf(digest) !== -1) return { kind: 'decoy' };
+
+    /*
+     * Last chance before calling it wrong: does the all-lowercase form match?
+     * If so they have the right flag and only the capitalisation is off, which
+     * is worth saying out loud rather than letting them think they are lost.
+     * Reveals nothing: it only confirms what they already typed.
+     */
+    const lowerDigest = await sha256Hex(CTF.hashSalt + value.toLowerCase());
+    const nearSlot = CTF.slots.find(function (s) { return s.digestLower === lowerDigest; });
+    if (nearSlot) return { kind: 'case', slot: nearSlot };
+    if (CTF.bonus.digestLower === lowerDigest) return { kind: 'case', slot: CTF.bonus };
 
     return { kind: 'wrong' };
   }

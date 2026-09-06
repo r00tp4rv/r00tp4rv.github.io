@@ -17,7 +17,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>r00tp4rv · Terminal 0f Truth</title>
 
-  <meta name="description" content="Parv Bajaj, Product Security Engineer. An interactive terminal and a 5 flag CTF you can play in the browser." />
+  <meta name="description" content="Parv Bajaj, Product Security Engineer. An interactive terminal, a 5 flag CTF you can play in the browser, and a trail of writeups." />
   <meta name="author" content="Parv Bajaj" />
   <link rel="canonical" href="https://r00tp4rv.github.io/" />
   <meta name="theme-color" content="#020305" />
@@ -27,19 +27,21 @@
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="r00tp4rv" />
   <meta property="og:title" content="r00tp4rv · Terminal 0f Truth" />
-  <meta property="og:description" content="Product Security Engineer. An interactive terminal and a 5 flag CTF you can play in the browser." />
+  <meta property="og:description" content="Product Security Engineer. An interactive terminal, a 5 flag CTF you can play in the browser, and a trail of writeups." />
   <meta property="og:url" content="https://r00tp4rv.github.io/" />
   <meta property="og:image" content="https://r00tp4rv.github.io/assets/r00tp4rv-logo.png" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="r00tp4rv · Terminal 0f Truth" />
-  <meta name="twitter:description" content="Product Security Engineer. An interactive terminal and a 5 flag CTF you can play in the browser." />
+  <meta name="twitter:description" content="Product Security Engineer. An interactive terminal, a 5 flag CTF you can play in the browser, and a trail of writeups." />
   <meta name="twitter:image" content="https://r00tp4rv.github.io/assets/r00tp4rv-logo.png" />
 
   <!--
     GitHub Pages cannot set response headers, so the policy goes in a meta tag.
     'unsafe-inline' on script-src is required by the inline gtag config block.
     It is a real weakening, but the policy still blocks injected external
-    script, framing, form exfiltration and base tag hijacking.
+    script, form exfiltration and base tag hijacking.
+    frame-ancestors is deliberately absent: browsers ignore it in a meta tag
+    and only honour it as a real header, which GitHub Pages cannot send.
   -->
   <meta http-equiv="Content-Security-Policy" content="
     default-src 'self';
@@ -50,7 +52,6 @@
     connect-src 'self' https://www.google-analytics.com https://region1.google-analytics.com https://www.googletagmanager.com;
     base-uri 'none';
     form-action 'none';
-    frame-ancestors 'none';
     object-src 'none'
   " />
   <meta name="referrer" content="strict-origin-when-cross-origin" />
@@ -240,6 +241,7 @@
       <ul class="mobile-navlist">
         <li><a id="m-whoami" href="https://parvbajaj.github.io" target="_blank" rel="noopener">whoami/</a></li>
         <li><a id="m-xp" href="xp.html">xp/</a></li>
+        <li><a id="m-writeups" href="https://medium.com/@parvbajaj2000" target="_blank" rel="noopener">writeups/</a></li>
         <li><a id="m-contact" href="https://www.linkedin.com/in/parvbajaj">LinkedIn/</a></li>
       </ul>
     </div>
