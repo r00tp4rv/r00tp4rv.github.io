@@ -58,7 +58,7 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Newsreader:opsz,wght@6..72,400&family=Share+Tech+Mono&display=swap" rel="stylesheet">
   <link href="assets/r00tp4rv-logo.png" rel="apple-touch-icon">
   <link rel="icon" type="image/png" href="assets/favicon.png" />
   <link rel="stylesheet" href="style.css" />
@@ -264,10 +264,33 @@
   <div id="mobile-backdrop" class="mobile-backdrop" tabindex="-1" aria-hidden="true"></div>
   <main class="container" role="main">
 
+    <!-- Identity. The page had no visible "who is this" content after the
+         stats block came out. -->
+    <section class="identity" aria-labelledby="identity-name">
+      <p class="identity-eyebrow">
+        <span class="identity-rule" aria-hidden="true"></span>Product Security Engineer
+      </p>
+
+      <h1 id="identity-name" class="identity-name">Parv Bajaj</h1>
+      <p class="identity-handle">r00tp4rv</p>
+
+      <p class="identity-bio">
+        I take products apart before someone else does. Application security by
+        day, capturing flags most other nights.
+      </p>
+
+      <!-- One action only. whoami/ is the hero's single green call to action;
+           writeups/ and xp/ live in the nav bar, not here. -->
+      <div class="identity-actions">
+        <a class="identity-btn" href="https://parvbajaj.github.io"
+           target="_blank" rel="noopener">whoami/</a>
+      </div>
+    </section>
+
     <!-- Live CTF intro: sets expectations before the terminal, so a first time
          visitor knows this is playable and knows the first command to type. -->
     <section class="ctf-intro" aria-labelledby="ctf-intro-title">
-      <h1 id="ctf-intro-title" class="ctf-eyebrow">// live ctf</h1>
+      <h2 id="ctf-intro-title" class="ctf-eyebrow">// live ctf</h2>
       <p class="ctf-lede">Everything you need is in this tab. Type <code>help</code> to start and submit what you find.</p>
     </section>
 
