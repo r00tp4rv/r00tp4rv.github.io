@@ -1,4 +1,5 @@
-<!-- Dev's note: I have left a bonus flag (6th flag) which even the flag checker is unaware of. Can you search for it?-->
+<!-- Dev's note: there is a 6th flag on this page. The flagchecker does know it,
+     and it unlocks a bonus slot. It will not count toward the 5. Can you search for it? -->
 <!doctype html>
 <html lang="en">
 <head>
@@ -12,8 +13,42 @@
 </script>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>r00tp4rv — CTF Participation</title>
+<title>r00tp4rv · CTF Participation</title>
 
+<meta name="description" content="CTF participation and results for Parv Bajaj, Product Security Engineer." />
+<link rel="canonical" href="https://r00tp4rv.github.io/xp.html" />
+<meta name="theme-color" content="#020305" />
+
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="r00tp4rv" />
+<meta property="og:title" content="r00tp4rv · CTF Participation" />
+<meta property="og:description" content="CTF participation and results for Parv Bajaj, Product Security Engineer." />
+<meta property="og:url" content="https://r00tp4rv.github.io/xp.html" />
+<meta property="og:image" content="https://r00tp4rv.github.io/assets/r00tp4rv-logo.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="r00tp4rv · CTF Participation" />
+<meta name="twitter:description" content="CTF participation and results for Parv Bajaj, Product Security Engineer." />
+<meta name="twitter:image" content="https://r00tp4rv.github.io/assets/r00tp4rv-logo.png" />
+
+<!-- Same policy as index.html. 'unsafe-inline' on script-src is required by
+     the inline gtag block and this page's own inline script. -->
+<meta http-equiv="Content-Security-Policy" content="
+  default-src 'self';
+  script-src 'self' 'unsafe-inline' https://www.googletagmanager.com;
+  style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+  font-src https://fonts.gstatic.com;
+  img-src 'self' data: https://www.googletagmanager.com https://www.google-analytics.com;
+  connect-src 'self' https://www.google-analytics.com https://region1.google-analytics.com https://www.googletagmanager.com;
+  base-uri 'none';
+  form-action 'none';
+  frame-ancestors 'none';
+  object-src 'none'
+" />
+<meta name="referrer" content="strict-origin-when-cross-origin" />
+
+<link rel="icon" type="image/png" href="assets/favicon.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
 
 <style>
@@ -209,7 +244,7 @@ function _f(){ const a="cjAwdHA0cnZ7", b="eTB1X3B3bjNkX3hw", c="fQ=="; return at
 
     if(!isRoot){
       if(q==='flag.txt'){ show('drwxr-xr-x r00tp4rv admin flag.txt'); shake(); }
-      else if(q==='cat flag.txt'){ show('Permission denied — requires elevated privileges'); shake(); }
+      else if(q==='cat flag.txt'){ show('Permission denied: requires elevated privileges'); shake(); }
       else if(q==='sudo su' || q==='sudo cat flag.txt' || q==='sudo flag.txt'){ show('Users may execute only what is allowed. Try listing your sudo permissions.'); flash(); }
       else if(q==='sudo -l'){ show('User may run the following commands on server:\n(root) NOPASSWD: /usr/bin/find'); flash(); }
       else if(q.includes('find') && q.includes('/bin/sh')){ becomeRoot(); }
@@ -217,7 +252,29 @@ function _f(){ const a="cjAwdHA0cnZ7", b="eTB1X3B3bjNkX3hw", c="fQ=="; return at
     } else {
       if(q.includes('flag.txt')){
         r.classList.remove('victory'); void r.offsetWidth;
-        r.textContent=_f()+"\n\n[ BONUS FLAG UNLOCKED ]\n\nEven the flag checker doesn’t know this exists.";
+
+        /* The old copy claimed the checker had no idea this flag existed.
+           That used to be true. It is not any more: the bonus is a real slot
+           in the engine and renders as a sixth chip once submitted. So send
+           the player back to the checker rather than leaving it a dead end. */
+        r.textContent = '';
+        const head = document.createElement('div');
+        head.textContent = '[ BONUS FLAG UNLOCKED ]';
+
+        const flag = document.createElement('div');
+        flag.style.cssText = 'margin:10px 0;font-size:18px;word-break:break-all';
+        flag.textContent = _f();
+
+        const tail = document.createElement('div');
+        tail.style.cssText = 'opacity:.75;font-size:13px;line-height:1.5';
+        tail.append('Not one of the five. Take it to the ');
+        const link = document.createElement('a');
+        link.href = 'index.html';
+        link.textContent = 'flagchecker';
+        link.style.cssText = 'color:var(--accent);text-decoration:underline';
+        tail.append(link, ' and it unlocks a sixth slot.');
+
+        r.append(head, flag, tail);
         r.classList.add('victory'); r.classList.add('victory-hold'); r.classList.add('active'); flash();
         setTimeout(()=>r.classList.remove('victory-hold'),5000);
       } else { show('#'); }

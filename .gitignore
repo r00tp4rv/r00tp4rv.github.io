@@ -1,0 +1,23 @@
+# macOS
+.DS_Store
+**/.DS_Store
+._*
+.Spotlight-V100
+.Trashes
+
+# Editors
+.vscode/
+.idea/
+*.swp
+
+# Node (the QA tooling lives in ../tools, never in the published site)
+node_modules/
+
+# Never publish the flag generator or anything derived from it.
+# tools/gen-ctf-constants.py holds the only plaintext copy of the flags and
+# the sudo password, and it lives outside this repo on purpose. These patterns
+# are a second line of defence in case it is ever copied in by accident.
+gen-ctf-constants.py
+ctf-constants.json
+flags.json
+*.secrets.json

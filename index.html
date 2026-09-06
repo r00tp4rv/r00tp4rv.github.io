@@ -13,9 +13,50 @@
   <meta charset="utf-8" />
   <!-- decoy meta for source-hunters -->
   <meta name="x-decoys" content="r00tp4rv{f4ck_y0u_s0urc3_hunt3r}">
-  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1" />
-  <title>r00tp4rv — Terminal 0f Truth</title>
+  <!-- Pinch zoom must not be blocked (WCAG 1.4.4). -->
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>r00tp4rv · Terminal 0f Truth</title>
 
+  <meta name="description" content="Parv Bajaj, Product Security Engineer. An interactive terminal and a 5 flag CTF you can play in the browser." />
+  <meta name="author" content="Parv Bajaj" />
+  <link rel="canonical" href="https://r00tp4rv.github.io/" />
+  <meta name="theme-color" content="#020305" />
+
+  <!-- Share cards. The site is linked from LinkedIn and Medium, where a bare
+       URL with no preview is a wasted impression. -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="r00tp4rv" />
+  <meta property="og:title" content="r00tp4rv · Terminal 0f Truth" />
+  <meta property="og:description" content="Product Security Engineer. An interactive terminal and a 5 flag CTF you can play in the browser." />
+  <meta property="og:url" content="https://r00tp4rv.github.io/" />
+  <meta property="og:image" content="https://r00tp4rv.github.io/assets/r00tp4rv-logo.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="r00tp4rv · Terminal 0f Truth" />
+  <meta name="twitter:description" content="Product Security Engineer. An interactive terminal and a 5 flag CTF you can play in the browser." />
+  <meta name="twitter:image" content="https://r00tp4rv.github.io/assets/r00tp4rv-logo.png" />
+
+  <!--
+    GitHub Pages cannot set response headers, so the policy goes in a meta tag.
+    'unsafe-inline' on script-src is required by the inline gtag config block.
+    It is a real weakening, but the policy still blocks injected external
+    script, framing, form exfiltration and base tag hijacking.
+  -->
+  <meta http-equiv="Content-Security-Policy" content="
+    default-src 'self';
+    script-src 'self' 'unsafe-inline' https://www.googletagmanager.com;
+    style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+    font-src https://fonts.gstatic.com;
+    img-src 'self' data: https://www.googletagmanager.com https://www.google-analytics.com;
+    connect-src 'self' https://www.google-analytics.com https://region1.google-analytics.com https://www.googletagmanager.com;
+    base-uri 'none';
+    form-action 'none';
+    frame-ancestors 'none';
+    object-src 'none'
+  " />
+  <meta name="referrer" content="strict-origin-when-cross-origin" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
   <link href="assets/r00tp4rv-logo.png" rel="apple-touch-icon">
   <link rel="icon" type="image/png" href="assets/favicon.png" />
@@ -53,12 +94,14 @@
     align-items: center;
   }
 
+  /* Nav sits back by default. whoami/ is the one green item, which gives the
+     header a single focal point instead of four competing ones. */
   .navlinks a {
     display: inline-flex;
     gap: 8px;
     align-items: center;
     text-decoration: none;
-    color: var(--neon);
+    color: #9fb3ad;
     padding: 8px 10px;
     border-radius: 8px;
     transition: all 0.25s cubic-bezier(.2, .9, .2, 1);
@@ -67,12 +110,15 @@
     font-size: 13px;
   }
 
+  .navlinks a#nav-whoami { color: var(--neon); }
+  .navlinks a#nav-whoami .nav-icon { color: var(--neon); }
+
   .nav-icon {
     width: 18px;
     height: 18px;
     display: inline-block;
     flex: 0 0 18px;
-    color: var(--neon);
+    color: currentColor;
     transition: all 0.25s ease;
   }
 
@@ -84,7 +130,7 @@
     transition: stroke 0.25s ease, filter 0.25s ease;
   }
 
-  /* Hover state — icon and text both glow */
+  /* Hover state: icon and text both glow */
   .navlinks a:hover, .navlinks a:focus {
     color: var(--accent);
     transform: translateY(-3px) scale(1.08);
@@ -134,7 +180,7 @@
     <!-- NEW nav: icon + label (neon green base, cyan hover glow) -->
     <nav class="navlinks" aria-label="main navigation">
       <!-- whoami -->
-      <a id="nav-whoami" href="https://parvbajaj.github.io" target="_blank" rel="noopener" aria-label="whoami / profile" title="whoami — profile">
+      <a id="nav-whoami" href="https://parvbajaj.github.io" target="_blank" rel="noopener" aria-label="whoami / profile" title="whoami · profile">
         <span class="nav-icon" aria-hidden="true" role="img">
           <svg viewBox="0 0 24 24" fill="none" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="12" cy="8" r="3"></circle>
@@ -145,7 +191,7 @@
       </a>
 
       <!-- xp -->
-      <a id="nav-xp" href="xp.html" aria-label="experience - xp" title="xp — experience">
+      <a id="nav-xp" href="xp.html" aria-label="experience - xp" title="xp · experience">
         <span class="nav-icon" aria-hidden="true" role="img">
           <svg viewBox="0 0 24 24" fill="none" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
             <path d="M12 2L4 7v6c0 5 3 9 8 11 5-2 8-6 8-11V7l-8-5z"></path>
@@ -155,21 +201,8 @@
         <span class="label">xp/</span>
       </a>
 
-      <!-- writeups -->
-      <a id="nav-writeups" href="https://medium.com/@parvbajaj2000" target="_blank" rel="noopener" aria-label="writeups" title="writeups — blog">
-        <span class="nav-icon" aria-hidden="true" role="img">
-          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"></path>
-            <path d="M14 2v6h6"></path>
-            <line x1="8" y1="13" x2="16" y2="13"></line>
-            <line x1="8" y1="17" x2="16" y2="17"></line>
-          </svg>
-        </span>
-        <span class="label">writeups/</span>
-      </a>
-
       <!-- LinkedIn -->
-      <a id="nav-contact" href="https://www.linkedin.com/in/parvbajaj" target="_blank" rel="noopener" aria-label="LinkedIn — contact" title="LinkedIn">
+      <a id="nav-contact" href="https://www.linkedin.com/in/parvbajaj" target="_blank" rel="noopener" aria-label="LinkedIn · contact" title="LinkedIn">
         <span class="nav-icon" aria-hidden="true" role="img">
           <svg viewBox="0 0 24 24" fill="none" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
             <path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-4 0v7h-4v-7a6 6 0 016-6z"></path>
@@ -207,7 +240,6 @@
       <ul class="mobile-navlist">
         <li><a id="m-whoami" href="https://parvbajaj.github.io" target="_blank" rel="noopener">whoami/</a></li>
         <li><a id="m-xp" href="xp.html">xp/</a></li>
-        <li><a id="m-writeups" href="https://medium.com/@parvbajaj2000" target="_blank" rel="noopener">writeups/</a></li>
         <li><a id="m-contact" href="https://www.linkedin.com/in/parvbajaj">LinkedIn/</a></li>
       </ul>
     </div>
@@ -216,12 +248,20 @@
   <!-- backdrop overlay -->
   <div id="mobile-backdrop" class="mobile-backdrop" tabindex="-1" aria-hidden="true"></div>
   <main class="container" role="main">
+
+    <!-- Live CTF intro: sets expectations before the terminal, so a first time
+         visitor knows this is playable and knows the first command to type. -->
+    <section class="ctf-intro" aria-labelledby="ctf-intro-title">
+      <h1 id="ctf-intro-title" class="ctf-eyebrow">// live ctf</h1>
+      <p class="ctf-lede">Everything you need is in this tab. Type <code>help</code> to start and submit what you find.</p>
+    </section>
+
     <div class="main-grid">
       <!-- terminal -->
       <section class="mac-term" aria-labelledby="term-title">
         <div class="mac-bar">
           <div class="traffic" aria-hidden="true"><div class="dot red"></div><div class="dot yellow"></div><div class="dot green"></div></div>
-          <div id="term-title" class="mac-title">r00tp4rv — interactive terminal</div>
+          <div id="term-title" class="mac-title">r00tp4rv · interactive terminal</div>
         </div>
 
         <div class="term-wrap">
@@ -239,9 +279,9 @@
         </div>
 
         <div class="flag-body">
-          <div style="font-size:13px;color:var(--muted)">Enter a flag (format <em>r00tp4rv{...}</em>) or run <code>flag &lt;value&gt;</code> in the terminal</div>
+          <label for="flag-input" style="font-size:13px;color:var(--muted)">Enter a flag (format <em>r00tp4rv{...}</em>) or run <code>flag &lt;value&gt;</code> in the terminal</label>
           <div class="flag-input-wrap">
-            <input id="flag-input" class="flag-input" placeholder="r00tp4rv{...}" autocomplete="off" />
+            <input id="flag-input" class="flag-input" placeholder="r00tp4rv{...}" autocomplete="off" spellcheck="false" autocapitalize="none" autocorrect="off" />
             <button id="flag-btn" class="flag-btn" type="button">Check</button>
           </div>
           <div class="flag-status" id="flag-status" aria-live="polite"></div>
@@ -249,15 +289,16 @@
       </aside>
     </div>
 
-    <div class="stats-block" aria-label="stats">
-      <div class="stat"><div class="n" id="s-ctfs" data-target="25">0</div><div class="l">CTFs participated</div></div>
-      <div class="stat"><div class="n" id="s-awards" data-target="3">0</div><div class="l">Awards won</div></div>
-      <div class="stat"><div class="n" id="s-pwns" data-target="1337">0</div><div class="l">Pwns</div></div>
-    </div>
-
     <div class="footer">Built by r00tp4rv • Enter to run • Up/Down for history • type help</div>
   </main>
 
-  <script src="core.obf.js"></script>
+  <!--
+    ctf.js must load first: it defines window.CTFEngine, which core.js reads.
+    core.obf.js is gone. The bundle is readable now because there is nothing
+    left in it worth obfuscating: flags are verified by hash, and the gated
+    payloads are AES-GCM ciphertext.
+  -->
+  <script src="ctf.js"></script>
+  <script src="core.js"></script>
 </body>
 </html>

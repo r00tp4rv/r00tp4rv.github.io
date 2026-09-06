@@ -181,7 +181,7 @@ a{color:var(--neon)}
 }
 
 /* terminal text */
-.line{white-space:pre-wrap;margin-bottom:10px;color:rgba(124,255,76,0.96)}
+.line{white-space:pre-wrap;overflow-wrap:anywhere;margin-bottom:10px;color:rgba(124,255,76,0.96)}
 .prompt{color:var(--neon);font-weight:700}
 
 /* PROMPT ROW (inline contenteditable) */
@@ -242,7 +242,7 @@ a{color:var(--neon)}
   animation: rootGlow 1.6s ease-in-out infinite alternate;
 }
 /* flag card */
-.flag-card{background:linear-gradient(180deg,rgba(0,0,0,0.36),rgba(0,0,0,0.22));padding:12px;border-radius:12px;border:1px solid rgba(124,255,76,0.06);font-family:'Share Tech Mono';height:560px;display:flex;flex-direction:column;gap:12px;box-shadow:0 30px 60px rgba(0,0,0,0.5)}
+.flag-card{background:linear-gradient(180deg,rgba(0,0,0,0.36),rgba(0,0,0,0.22));padding:12px;border-radius:12px;border:1px solid rgba(124,255,76,0.06);font-family:'Share Tech Mono';min-height:560px;display:flex;flex-direction:column;gap:12px;box-shadow:0 30px 60px rgba(0,0,0,0.5)}
 .flag-title{display:flex;align-items:center;gap:10px}
 .flag-body{display:flex;flex-direction:column;gap:10px;flex:1}
 .flag-input-wrap{display:flex;gap:8px;align-items:center}
@@ -268,25 +268,21 @@ a{color:var(--neon)}
   80%{ transform: translateX(3px) }
 }
 
-/* stats */
-.stats-block{display:flex;gap:14px;align-items:center;justify-content:center;margin-top:6px;flex-wrap:wrap}
-.stat{flex:1;min-width:160px;max-width:320px;background:linear-gradient(180deg,rgba(0,0,0,0.12),rgba(0,0,0,0.04));padding:14px;border-radius:10px;border:1px solid rgba(124,255,76,0.03);text-align:center;box-shadow:0 10px 30px rgba(0,0,0,0.6)}
-.stat .n{font-family:'Share Tech Mono';font-size:36px;color:var(--neon);line-height:1}
-.stat .n {
-  font-family:'Share Tech Mono';
-  font-size:36px;
-  color:var(--neon);
-  line-height:1;
-  text-shadow: 0 0 6px rgba(124,255,76,0.7),
-               0 0 14px rgba(124,255,76,0.4);
-}
-.stat .l{color:var(--muted);font-size:13px;margin-top:8px;letter-spacing:1px}
+/* stats block removed: the CTFs/Awards/Pwns counters were dropped from
+   index.html, so their styles are dead. xp.html has its own inline styles. */
 
 /* footer */
 .footer{margin-top:12px;text-align:center;color:var(--muted);font-size:13px}
 
 /* responsive */
-@media (max-width:980px){ .main-grid{grid-template-columns:1fr} .mac-term,.flag-card{height:auto} }
+/* NOTE: .flag-card uses min-height (it has to grow for the tracker), so a
+   bare `height:auto` no longer resets it. Reset min-height too, or the
+   card is stuck 560px tall on every phone and tablet. */
+@media (max-width:980px){
+  .main-grid{grid-template-columns:1fr}
+  .mac-term{height:auto;min-height:420px}
+  .flag-card{height:auto;min-height:0}
+}
 @media (max-width:720px){
   .navlinks{display:none}
   .flag-input,.flag-btn{padding:14px}
@@ -517,3 +513,261 @@ r00tp4rv{fu4k_y0u_@g@in_s0urc3_hunt3r}
 }
 
 /* ---------- END block ---------- */
+/* =========================================================================
+   CTF progress tracker
+   -------------------------------------------------------------------------
+   Provisional styling, token driven so a redesign can override it without
+   touching core.js. State lives in data attributes, not class soup:
+     #ctf-progress[data-state="in-progress" | "complete"]
+     .ctf-slot[data-state="locked" | "captured"]
+   ========================================================================= */
+
+.ctf-progress{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  margin-top:auto;              /* sit at the bottom of the flag card */
+  padding-top:14px;
+  border-top:1px solid rgba(124,255,76,0.08);
+}
+
+.ctf-progress-head{
+  display:flex;
+  align-items:baseline;
+  justify-content:space-between;
+  font-family:'Share Tech Mono',monospace;
+}
+
+.ctf-progress-label{
+  font-size:12px;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  color:var(--muted);
+}
+
+.ctf-progress-count{ font-size:15px; color:var(--muted); }
+.ctf-progress-count b{ font-size:22px; color:var(--neon); font-weight:700; }
+
+.ctf-progress-bar{
+  position:relative;
+  height:6px;
+  border-radius:999px;
+  background:rgba(255,255,255,0.06);
+  overflow:hidden;
+}
+.ctf-progress-bar i{
+  display:block;
+  height:100%;
+  width:0;
+  border-radius:999px;
+  background:linear-gradient(90deg,var(--neon),var(--accent));
+  transition:width .5s cubic-bezier(.2,.9,.2,1);
+}
+
+.ctf-slots{
+  list-style:none;
+  margin:0;
+  padding:0;
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+}
+
+.ctf-slot{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:5px 9px;
+  border-radius:999px;
+  font-family:'Share Tech Mono',monospace;
+  font-size:11px;
+  border:1px solid transparent;
+  transition:background .25s ease, border-color .25s ease, color .25s ease;
+}
+
+.ctf-slot[data-state="locked"]{
+  background:rgba(255,255,255,0.03);
+  border-color:rgba(255,255,255,0.06);
+  color:var(--muted);
+}
+
+.ctf-slot[data-state="captured"]{
+  background:rgba(124,255,76,0.10);
+  border-color:rgba(124,255,76,0.38);
+  color:var(--neon);
+}
+
+.ctf-slot-mark{ font-size:10px; opacity:.9; }
+.ctf-slot-name{ font-weight:700; letter-spacing:.03em; }
+.ctf-slot-hint{ opacity:.62; }
+
+/* The bonus chip is only ever rendered once earned, so it can afford to shout. */
+.ctf-slot[data-slot="bonus"]{
+  background:rgba(89,240,255,0.10);
+  border-color:rgba(89,240,255,0.42);
+  color:var(--accent);
+}
+
+.ctf-slot.just-captured{ animation:ctf-pop 700ms cubic-bezier(.2,.9,.2,1); }
+
+@keyframes ctf-pop{
+  0%  { transform:scale(.9);  box-shadow:0 0 0 0 rgba(124,255,76,.55); }
+  55% { transform:scale(1.09); box-shadow:0 0 16px 3px rgba(124,255,76,.34); }
+  100%{ transform:scale(1);   box-shadow:0 0 0 0 rgba(124,255,76,0); }
+}
+
+.ctf-progress[data-state="complete"] .ctf-progress-label{
+  color:var(--neon);
+  text-shadow:0 0 10px rgba(124,255,76,.5);
+}
+.ctf-progress[data-state="complete"] .ctf-progress-bar i{
+  box-shadow:0 0 14px rgba(124,255,76,.6);
+}
+
+/* Visible focus. The old styles relied on the browser default, which the
+   dark background all but erased. */
+.flag-input:focus-visible,
+.flag-btn:focus-visible,
+.terminal:focus-visible,
+.cmd-line:focus-visible{
+  outline:2px solid var(--accent);
+  outline-offset:2px;
+}
+
+/* =========================================================================
+   Reduced motion. A full screen matrix rain, scanlines and a typing cursor
+   are exactly the effects that trigger vestibular symptoms. core.js also
+   checks this at runtime and skips the animation loops entirely.
+   ========================================================================= */
+@media (prefers-reduced-motion: reduce){
+  *,
+  *::before,
+  *::after{
+    animation-duration:.001ms !important;
+    animation-iteration-count:1 !important;
+    transition-duration:.001ms !important;
+    scroll-behavior:auto !important;
+  }
+  #matrix{ opacity:.05; }
+  .overlay.scanlines,
+  .overlay.noise{ display:none; }
+}
+
+/* =========================================================================
+   Live CTF intro
+   ========================================================================= */
+
+.ctf-intro{ display:flex; flex-direction:column; gap:6px; }
+
+.ctf-eyebrow{
+  margin:0;
+  font-family:'Share Tech Mono',monospace;
+  font-size:13px;
+  font-weight:600;
+  letter-spacing:.18em;
+  text-transform:lowercase;
+  color:var(--neon);
+}
+
+.ctf-lede{
+  margin:0;
+  max-width:62ch;
+  font-size:15px;
+  line-height:1.6;
+  color:var(--muted);
+}
+
+.ctf-lede code{
+  font-family:'Share Tech Mono',monospace;
+  color:var(--neon);
+  background:rgba(124,255,76,0.08);
+  border:1px solid rgba(124,255,76,0.16);
+  border-radius:5px;
+  padding:1px 6px;
+  font-size:.92em;
+}
+
+/* =========================================================================
+   Responsive pass: iPhone, iPad, Mac
+   -------------------------------------------------------------------------
+   Verified breakpoints:
+     iPhone SE 375 · iPhone 15 Pro 393 · 15 Pro Max 430
+     iPad mini 744 · iPad 10.9 820 · iPad Pro 11 834 (portrait)
+     iPad Pro 11 1194 · iPad Pro 12.9 1024 (landscape)
+     MacBook Air 13 1440 · larger desktop 1680+
+   ========================================================================= */
+
+/* Nothing should ever scroll sideways. */
+html,body{ max-width:100%; overflow-x:hidden; }
+
+/* Respect the notch and the home indicator on iPhone. */
+.container{
+  padding-left:max(16px, env(safe-area-inset-left));
+  padding-right:max(16px, env(safe-area-inset-right));
+  padding-bottom:max(56px, env(safe-area-inset-bottom));
+}
+
+/* ---- iPad landscape and small laptops: keep two columns but let the
+        sidebar breathe rather than pinning it to a hard 360px. ---- */
+@media (min-width:981px) and (max-width:1280px){
+  .main-grid{ grid-template-columns:minmax(0,1fr) clamp(300px, 30vw, 360px); }
+}
+
+/* ---- iPad portrait and below: single column, terminal capped so the flag
+        card and tracker are reachable without a long scroll. ---- */
+@media (max-width:980px){
+  .container{ margin:12px auto; gap:14px; }
+  .terminal{ max-height:52vh; }
+  .ctf-lede{ font-size:14.5px; }
+}
+
+/* ---- Large phones and small tablets ---- */
+@media (max-width:720px){
+  .mac-term{ min-height:0; }
+  .terminal{ max-height:46vh; font-size:15px; padding:14px; }
+  .ctf-eyebrow{ font-size:12px; }
+  .flag-card{ padding:14px; }
+}
+
+/* ---- iPhone ---- */
+@media (max-width:480px){
+  .container{ margin:10px auto; gap:12px; }
+  .terminal{ max-height:44vh; font-size:14px; line-height:1.6; padding:12px; }
+  .mac-title{ font-size:12px; }
+  .ctf-lede{ font-size:14px; }
+
+  /* Stack the input above the button: side by side at 375px leaves the
+     field too narrow to read a full r00tp4rv{...} flag. */
+  .flag-input-wrap{ flex-direction:column; align-items:stretch; gap:8px; }
+  .flag-input,.flag-btn{ width:100%; }
+  .flag-btn{ padding:13px; }
+
+  /* Tracker chips: two per row rather than four cramped ones. */
+  .ctf-slots{ gap:5px; }
+  .ctf-slot{ flex:1 1 calc(50% - 5px); justify-content:flex-start; font-size:10.5px; padding:6px 8px; }
+  .ctf-slot-hint{ display:none; }          /* label alone is enough this narrow */
+  .ctf-progress-count b{ font-size:20px; }
+}
+
+/* ---- Very narrow (iPhone SE, split view) ---- */
+@media (max-width:360px){
+  .ctf-slot{ flex:1 1 100%; }
+  .ctf-slot-hint{ display:inline; }        /* full width again, so it fits */
+  .terminal{ font-size:13px; }
+}
+
+/* ---- Large desktop: stop the terminal from becoming a letterbox ---- */
+@media (min-width:1600px){
+  .container{ max-width:1360px; }
+  .mac-term{ height:620px; }
+  .flag-card{ min-height:620px; }
+}
+
+/* Touch targets: Apple's HIG minimum is 44px. */
+@media (pointer:coarse){
+  .flag-btn{ min-height:44px; }
+  .flag-input{ min-height:44px; }
+  .navlinks a,.mobile-navlist a{ min-height:44px; }
+  /* iOS zooms the page when a focused input is under 16px. */
+  .flag-input{ font-size:16px; }
+}
